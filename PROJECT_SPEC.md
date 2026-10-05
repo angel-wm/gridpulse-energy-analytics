@@ -16,17 +16,36 @@ Intelligence portfolio project centered on energy data.
 
 The project should demonstrate how raw analytical data can be:
 
-1. ingested into a cloud analytical platform;
-2. organized into reliable layers;
-3. transformed and modeled with dbt;
-4. validated using automated data-quality tests;
-5. optimized for analytical workloads;
-6. exposed through business-ready marts;
-7. consumed through Power BI;
-8. supported by reproducible infrastructure and automated validation.
+1. acquired or generated reproducibly;
+2. ingested into a cloud analytical platform;
+3. organized into reliable warehouse layers;
+4. transformed and modeled with dbt;
+5. validated through automated data-quality checks;
+6. optimized for analytical workloads and cost;
+7. exposed through business-ready marts;
+8. consumed through Power BI;
+9. supported by reproducible infrastructure and CI/CD where justified.
 
-The project must resemble a realistic professional data platform rather than a
+The project must resemble a realistic professional data platform, not a
 collection of disconnected technology demonstrations.
+
+## Portfolio role
+
+GridPulse is the portfolio project primarily responsible for developing and
+demonstrating:
+
+- BigQuery;
+- dbt;
+- Analytics Engineering;
+- cloud analytical warehousing;
+- dimensional / analytical modeling;
+- data quality;
+- Power BI consumption of curated warehouse models;
+- Terraform and CI/CD where they naturally support the platform.
+
+Other portfolio projects are intended to cover Spark/Databricks, Snowflake,
+Airflow, Kafka, streaming, and related architectures. GridPulse must not absorb
+those technologies without a real architectural requirement.
 
 ## Business domain
 
@@ -34,19 +53,20 @@ The domain is energy analytics.
 
 The exact dataset and business scenario are intentionally **not yet selected**.
 
-The final dataset should preferably support several of the following:
+The final data should ideally support several of the following:
 
 - energy consumption over time;
 - meters, facilities, sites, regions, or customers;
 - peak-demand analysis;
-- consumption trends;
+- consumption trends and seasonality;
 - cost or tariff analysis;
 - operational efficiency;
 - anomaly or unusual-consumption analysis;
-- comparisons across locations or periods.
+- comparisons across locations or periods;
+- optional contextual enrichment such as weather when analytically justified.
 
-Weather, tariff, geographic, or other supplementary datasets may be introduced
-only if they add meaningful analytical value.
+Supplementary datasets may be introduced only when they improve the business
+analysis or modeling challenge rather than merely increasing project scope.
 
 ## Intended users
 
@@ -69,34 +89,39 @@ Primary cloud analytical warehouse.
 Expected responsibilities:
 
 - raw and transformed analytical storage;
-- scalable SQL execution;
-- analytical datasets;
+- scalable GoogleSQL execution;
+- datasets and tables;
 - partitioning and clustering when justified;
-- query-cost and performance analysis.
+- query-cost and performance analysis;
+- native loading and warehouse behavior that should be learned explicitly.
+
+GridPulse should teach BigQuery itself, not only BigQuery as an invisible
+backend for dbt.
 
 ### dbt
 
-Primary transformation and Analytics Engineering layer.
+Primary Analytics Engineering transformation layer.
 
 Expected responsibilities:
 
-- sources;
+- source declarations;
 - staging models;
 - intermediate models;
 - marts;
-- dependency management with `ref()`;
+- dependency management through `ref()`;
 - tests;
 - documentation;
 - lineage;
 - reusable Jinja/macros when justified;
-- incremental models where appropriate.
+- snapshots or incremental models when justified;
+- model materialization decisions.
 
-dbt should be a central technology in GridPulse rather than a superficial
-addition.
+dbt is central to GridPulse, but it must not hide native BigQuery concepts that
+the user should understand first.
 
 ### SQL
 
-Primary analytical transformation language.
+Primary transformation and analytical language.
 
 The project should exercise professional SQL patterns such as:
 
@@ -105,15 +130,21 @@ The project should exercise professional SQL patterns such as:
 - aggregations;
 - window functions;
 - conditional logic;
-- dimensional modeling queries;
-- validation and reconciliation queries.
+- date/time analysis;
+- dimensional-model transformations;
+- reconciliation queries;
+- data-quality investigation.
 
 ### Python
 
-Python may support ingestion, source preparation, automation, or utilities when
-a task is better solved outside SQL.
+Python may support:
 
-Python should not replace SQL or dbt where they are the natural tools.
+- ingestion;
+- API/file acquisition;
+- source generation when a realistic source is unavailable;
+- automation or utilities.
+
+Python should not replace SQL or dbt where those are the natural tools.
 
 ### Power BI
 
@@ -125,14 +156,27 @@ Expected responsibilities:
 - DAX measures where necessary;
 - interactive analysis;
 - business KPIs;
-- final stakeholder-facing dashboard/report.
+- stakeholder-facing report/dashboard.
+
+Business logic should live upstream in dbt/BigQuery when it is reusable data
+logic. DAX should handle semantic/presentation calculations that belong in the
+BI layer.
 
 ### Terraform
 
-Infrastructure as Code for reproducible infrastructure where technically and
-economically practical.
+Infrastructure as Code for reproducible cloud infrastructure where technically
+and economically practical.
 
-Terraform must not be included only to increase the technology count.
+Terraform should be introduced when actual resources and dependencies are
+understood. It should not be postponed solely to make it look like an optional
+portfolio add-on, nor used decoratively.
+
+Potential scope may include:
+
+- BigQuery datasets;
+- IAM/service accounts when safe and justified;
+- storage or other GCP resources if the final ingestion architecture needs
+  them.
 
 ### GitHub Actions
 
@@ -140,46 +184,48 @@ CI/CD and automated validation where meaningful.
 
 Potential responsibilities:
 
-- SQL/dbt validation;
-- dbt compile/test workflows;
-- Python checks if Python is introduced;
-- Terraform formatting/validation;
-- repository quality checks.
+- dbt compile/test/build;
+- SQL/project checks;
+- Python quality/tests if Python exists;
+- Terraform fmt/validate/plan where safe;
+- documentation or repository checks.
+
+CI/CD design must account for secrets, cloud cost, environment separation, and
+the danger of triggering paid cloud work unnecessarily.
 
 ## Explicit non-goals
 
-The core project should NOT introduce technologies simply for portfolio breadth.
-
-Unless an approved decision changes the architecture, the project will not use:
+Unless an approved decision changes the architecture, GridPulse will not use:
 
 - Snowflake;
 - Databricks;
 - Apache Spark;
 - Kafka;
+- Airflow;
 - Kubernetes;
 - Hadoop.
 
-Those technologies belong to other portfolio projects where their use is
-architecturally justified.
+Docker is not automatically required. Add it only if the chosen local workflow
+or reproducibility problem clearly benefits from it.
 
 ## Functional requirements
 
 The completed project should provide:
 
-- reproducible source ingestion;
+- reproducible source acquisition/ingestion;
 - clearly separated raw and transformed data;
 - dbt staging layer;
-- business transformation layer;
+- reusable business transformation layer;
 - analytical marts;
-- explicit data grain;
+- explicit model grain;
 - documented dimensional or analytical model;
 - automated data-quality checks;
 - reconciliation between important layers;
-- documented KPIs;
+- documented KPIs and metric definitions;
 - Power BI report/dashboard;
 - reproducible setup instructions;
 - technical documentation;
-- evidence of validation.
+- phase-based validation evidence.
 
 ## Non-functional requirements
 
@@ -191,64 +237,91 @@ The project should prioritize:
 - traceability;
 - testability;
 - understandable naming;
-- controlled cloud cost;
+- cloud cost control;
 - documentation;
 - version control;
-- least unnecessary complexity.
+- least unnecessary complexity;
+- security of credentials and secrets.
 
 ## Cost constraint
 
 The project should target zero or very low cost.
 
-Before enabling any resource that may create charges:
+Before enabling a resource that may create charges:
 
 1. identify the charging model;
 2. explain the risk;
-3. determine applicable free-tier or sandbox limits;
-4. choose appropriate safeguards.
+3. determine relevant free-tier/sandbox limits;
+4. choose safeguards;
+5. prefer bounded test data and query patterns while learning.
 
-Cost-awareness is part of the learning objective.
+Cost-awareness is part of the engineering objective.
 
 ## Learning objectives
 
-GridPulse should provide meaningful practice with:
+GridPulse should provide meaningful, hands-on practice with:
 
-- BigQuery;
-- GoogleSQL;
+- BigQuery and GoogleSQL;
+- BigQuery native loading and storage concepts;
 - partitioning;
 - clustering;
-- query optimization;
+- query optimization and bytes scanned;
 - cloud analytical architecture;
-- dbt projects;
+- dbt project structure;
 - dbt sources and refs;
 - staging/intermediate/marts;
 - Jinja;
-- tests;
-- documentation and lineage;
-- incremental processing;
+- dbt tests;
+- dbt documentation and lineage;
+- materializations and incremental processing;
 - dimensional modeling;
-- data quality;
+- data quality and reconciliation;
 - Power BI;
 - DAX;
 - Terraform;
-- CI/CD.
+- GitHub Actions / CI/CD.
+
+The user should be able to explain what each technology does, why it is used,
+what alternatives exist, and what tradeoffs were accepted.
+
+## Learning-first implementation rule
+
+The assistant should not optimize only for finishing quickly.
+
+When a new important concept appears, explain:
+
+- what it is;
+- what problem it solves;
+- why GridPulse needs it;
+- when it is normally used;
+- reasonable alternatives;
+- relevant limitations or tradeoffs.
+
+Implementation should proceed incrementally so the user can inspect and
+validate each layer.
+
+Large blocks of unexplained code, SQL, Terraform, or dbt configuration should
+be avoided.
 
 ## Portfolio requirements
 
 The final repository should communicate:
 
-- the business problem;
+- business problem;
+- source data and acquisition;
 - architecture;
-- dataset;
+- data grain;
 - engineering decisions;
+- warehouse organization;
 - data model;
 - transformations;
-- tests;
+- tests and reconciliation;
 - infrastructure;
 - CI/CD;
 - analytical results;
 - dashboard;
-- limitations;
+- known limitations;
+- cost considerations;
 - reproducibility instructions.
 
 A reviewer should be able to understand why each major technology exists.
@@ -257,29 +330,37 @@ A reviewer should be able to understand why each major technology exists.
 
 GridPulse is successful when:
 
-- the complete analytical flow can be reproduced;
+- the analytical flow can be reproduced from documented inputs;
 - important transformations are tested;
-- final metrics reconcile with their upstream sources;
+- important row counts/metrics reconcile across layers;
 - architecture and decisions are documented;
-- the Power BI output answers defined business questions;
-- the repository provides sufficient technical evidence for portfolio review;
-- the user can explain the architecture and implementation without relying on
-  memorized descriptions generated by an assistant.
+- BigQuery/dbt behavior is demonstrably understood rather than hidden;
+- Power BI answers the approved business questions;
+- infrastructure and automation are reproducible where included;
+- the repository provides sufficient evidence for technical portfolio review;
+- the user can explain and defend the system without relying on memorized
+  assistant-generated descriptions.
 
 ## Open questions for Phase 0
 
 Phase 0 must resolve at least:
 
-- Which energy dataset will be used?
-- What is the dataset grain?
-- What business scenario will the project represent?
-- What KPIs and analytical questions matter?
+- Which energy dataset/source will be used?
+- What business story will GridPulse represent?
+- What is the source grain?
+- What is the analytical grain?
+- Which users/personas matter?
+- Which business questions and KPIs matter?
 - Is supplementary data justified?
-- Which GCP project/account model will be used?
-- Can the desired setup operate within free/sandbox constraints?
+- Which GCP project/account approach will be used?
+- What BigQuery free-tier/sandbox constraints apply?
 - How will ingestion occur?
+- Are Cloud Storage or other GCP resources needed?
 - What BigQuery datasets/layers are required?
-- What dimensional model is appropriate?
-- Which infrastructure should be managed by Terraform?
-- How will Power BI connect to the final analytical layer?
-- What checks are required to close each implementation phase?
+- What dimensional or analytical model is appropriate?
+- What should be learned natively in BigQuery before dbt abstracts it?
+- Which dbt materializations are likely appropriate?
+- Which resources should Terraform manage?
+- What GitHub Actions workflows are safe and useful?
+- How will Power BI connect to the curated layer?
+- What validation and closure criteria apply to every later phase?
