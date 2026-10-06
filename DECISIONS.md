@@ -308,3 +308,41 @@ Educational/debugging discussions do not automatically update official state.
 
 Material approved changes must be written back to the appropriate repository
 source.
+
+
+---
+
+## D-011 — Adopt repository documentation readability guidance
+
+Status: **ACCEPTED**
+
+### Context
+
+GridPulse documentation is used by human readers, AI assistants, and coding
+agents across long-running project phases. The repository already separates
+state, architecture, roadmap, decisions, and evidence, but presentation quality
+should remain consistent as those documents grow.
+
+### Decision
+
+Install and use the Repository Documentation Readability skill under
+`.agents/skills/repository-documentation-readability/` for documentation work.
+
+The guidance applies to presentation: reader intent, progressive disclosure,
+representation choice, scanning, mobile readability, descriptive links, and
+documentation-set coherence.
+
+### Rationale
+
+The goal is to reduce reader effort without weakening technical precision or
+duplicating authoritative project information.
+
+### Consequences
+
+- README remains an entry point rather than the full documentation system.
+- Project-native contracts and the authority defined in REPO_CONTEXT always
+  take precedence.
+- Documentation changes should use the simplest useful representation.
+- Essential meaning must remain understandable in source-readable Markdown.
+- Future documentation work should consult the installed skill and load deeper
+  references only when needed.
