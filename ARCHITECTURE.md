@@ -4,157 +4,123 @@
 
 Architecture status: **INTENDED / NOT IMPLEMENTED**
 
-This document describes the current architectural direction.
+This document explains the current architectural direction. It does not prove that infrastructure, datasets, tables, pipelines, dbt models, Terraform resources, CI workflows, or dashboards exist.
 
-It does not prove that any infrastructure, dataset, table, pipeline, dbt model,
-Terraform resource, CI workflow, or dashboard exists.
+Phase 0 must refine and approve this architecture before implementation.
 
-Phase 0 must refine and approve the architecture before implementation.
+## Architecture at a glance
 
-## Current conceptual architecture
+GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI.
 
-    Energy data source(s)
-            |
-            v
-    Acquisition / Ingestion
-            |
-            v
-      BigQuery Raw
-            |
-            v
-      dbt Staging
-            |
-            v
-    dbt Intermediate
-            |
-            v
-       dbt Marts
-            |
-            v
-        Power BI
+    Energy source data
+            ↓
+    acquisition / ingestion
+            ↓
+       BigQuery raw
+            ↓
+       dbt staging
+            ↓
+    dbt intermediate
+            ↓
+        dbt marts
+            ↓
+         Power BI
 
 Cross-cutting concerns:
 
-    Terraform
-        -> reproducible approved cloud infrastructure
+| Concern | Role |
+| --- | --- |
+| Data quality | Tests, reconciliation, and business-rule validation |
+| Terraform | Reproducible approved cloud infrastructure |
+| GitHub Actions | Safe automated validation and CI/CD |
+| Git / GitHub | Version control, review, publication, and handoff |
+| Cost / security | Constraints that shape every implementation decision |
 
-    GitHub Actions
-        -> safe validation / CI/CD
+## Core design principle
 
-    Data Quality
-        -> tests, reconciliation, business rules
-
-    Git / GitHub
-        -> version control, review, publication, handoff
-
-## Design principle
-
-GridPulse is an Analytics Engineering project, but the architecture must expose
-the warehouse concepts being learned.
+GridPulse is an Analytics Engineering project, but it must still expose the warehouse concepts being learned.
 
 The intended learning progression is:
 
     source data
-        ->
-    understand/load/query in native BigQuery
-        ->
+        ↓
+    load and query with native BigQuery concepts
+        ↓
     introduce dbt abstractions
-        ->
+        ↓
     build maintainable analytical models
-        ->
+        ↓
     expose curated data to Power BI
 
-dbt should improve maintainability and engineering practice without making
-BigQuery behavior opaque.
+dbt should improve maintainability without making BigQuery behavior opaque.
 
-## Layer responsibilities
+## Data flow responsibilities
 
 ### Source
 
-Original energy-domain data and any approved contextual sources.
+The source layer represents the original energy-domain data and any approved contextual sources.
 
-Unresolved until Phase 0:
+Phase 0 must resolve:
 
 - exact source;
 - acquisition method;
-- licensing/usage constraints;
+- licensing or usage constraints;
 - source grain;
 - update cadence;
-- volume;
+- expected volume;
 - supplementary sources.
 
-Source data must be preserved or reproducibly reacquirable.
+Source data must remain reproducible or reacquirable.
 
-### Acquisition / ingestion
+### Acquisition and ingestion
 
-Responsible for moving source data into the analytical platform while
-preserving traceability.
+This layer moves source data into the analytical platform while preserving traceability.
 
-Possible implementations may include:
+Possible implementations include:
 
 - BigQuery-native loading;
 - Python;
 - Cloud Storage as a landing layer;
-- API/file acquisition mechanisms.
+- API or file acquisition.
 
-The final design must follow the selected source rather than forcing Python or
-additional GCP services unnecessarily.
+The selected source should determine the ingestion design. Do not force Python or additional GCP services without a reason.
 
-Expected concerns:
+Important concerns include reproducibility, idempotency where useful, source/load counts, failure visibility, and load metadata when valuable.
 
-- reproducibility;
-- idempotency where useful;
-- source/load counts;
-- failure visibility;
-- metadata such as load time/source file when valuable.
+### BigQuery raw
 
-### BigQuery raw layer
-
-Purpose:
+The raw layer should:
 
 - retain source-aligned data;
 - provide stable transformation inputs;
 - preserve traceability;
-- enable source-to-load reconciliation;
-- provide direct exposure to native BigQuery concepts before dbt abstracts
-  downstream work.
+- support source-to-load reconciliation;
+- expose native BigQuery behavior before dbt abstracts downstream work.
 
-Raw data should not silently discard analytically unusual but technically valid
-records.
+Raw data should not silently discard analytically unusual but technically valid records.
 
-Phase 0/early implementation must define:
+Phase 0 or early implementation must define dataset/table naming, loading strategy, schema approach, ingestion metadata, and cost controls.
 
-- dataset naming;
-- table naming;
-- load strategy;
-- schema approach;
-- whether ingestion-time metadata is needed;
-- cost controls.
+### Native BigQuery learning
 
-### Native BigQuery learning layer
+This is a conceptual responsibility, not necessarily a permanent physical dataset.
 
-This is a conceptual responsibility, not necessarily a permanent physical
-dataset.
-
-Before important behavior is hidden behind dbt, the user should understand and
-practice relevant native BigQuery capabilities such as:
+Before dbt hides an important behavior, the user should understand relevant native BigQuery capabilities such as:
 
 - GoogleSQL execution;
-- table/dataset behavior;
+- datasets and tables;
 - data types;
-- query plans/cost awareness;
-- bytes scanned;
+- query plans and bytes scanned;
 - partitioning;
 - clustering;
 - native loading;
-- views/tables where relevant.
+- views and tables.
 
-Temporary exploration objects should not become permanent architecture without
-a reason.
+Temporary learning objects should not become permanent architecture without a reason.
 
 ### dbt staging
 
-Purpose:
+Staging should:
 
 - declare sources;
 - rename and standardize fields;
@@ -168,51 +134,32 @@ Staging should avoid high-level business aggregations.
 
 ### dbt intermediate
 
-Purpose:
+Intermediate models should centralize reusable joins and transformations that reduce duplication or clarify responsibility.
 
-- combine/enrich staging models;
-- centralize reusable transformations;
-- resolve reusable business logic;
-- prepare data for marts.
-
-Intermediate models should exist only when they reduce duplication or clarify
-responsibilities.
+Do not create intermediate models merely to add another layer.
 
 ### dbt marts
 
-Purpose:
+Marts should:
 
 - expose business-ready analytical models;
 - implement approved reusable metric logic;
 - support Power BI efficiently;
 - provide stable analytical contracts.
 
-The final design may use a star schema or another justified analytical pattern.
+The final model may use a star schema or another justified analytical pattern.
 
-Phase 0 must define:
-
-- fact grain;
-- dimensions;
-- keys;
-- slowly changing behavior if relevant;
-- metric ownership;
-- expected Power BI consumption pattern.
+Phase 0 must define fact grain, dimensions, keys, slowly changing behavior if relevant, metric ownership, and expected Power BI consumption.
 
 ### Power BI
 
-Purpose:
+Power BI should consume curated analytical models and provide stakeholder-facing KPIs and analysis.
 
-- consume curated analytical models;
-- provide stakeholder-facing KPIs and analysis;
-- implement semantic/presentation logic that belongs in BI.
+Reusable transformation logic should remain upstream when practical instead of being duplicated in DAX.
 
-Reusable data transformation/business logic should not be duplicated in DAX
-without a clear reason.
+The report design remains unresolved until business questions and marts are approved.
 
-Power BI design remains unresolved until business questions and marts are
-approved.
-
-## Cross-cutting architecture
+## Cross-cutting engineering concerns
 
 ### Data quality
 
@@ -223,17 +170,16 @@ Expected controls include:
 - not-null checks;
 - uniqueness checks;
 - relationship/referential checks;
-- accepted values when meaningful;
+- accepted values where meaningful;
 - temporal sanity checks;
 - metric reconciliation;
 - business-rule tests.
 
-Tests should be chosen because they protect a real assumption, not because dbt
-supports them.
+Use tests because they protect real assumptions, not because dbt supports them.
 
 ### Cost and performance
 
-BigQuery architecture should consider:
+BigQuery decisions should consider:
 
 - bytes scanned;
 - table size and query patterns;
@@ -248,23 +194,18 @@ Optimization should be evidence-based.
 
 ### Infrastructure as Code
 
-Terraform should manage approved cloud resources where doing so improves
-reproducibility and learning.
-
-Terraform may begin during the foundation phase once resource requirements are
-known.
+Terraform may manage approved cloud resources when doing so improves reproducibility and learning.
 
 Potential targets include:
 
 - BigQuery datasets;
 - Cloud Storage if selected;
-- service accounts/IAM where safe and justified;
+- service accounts or IAM when safe and justified;
 - supporting GCP resources required by the final design.
 
 Do not commit secrets or service-account key material.
 
-Not every resource must be managed by Terraform if doing so adds complexity
-without learning or reproducibility value.
+Not every resource must be managed by Terraform.
 
 ### CI/CD
 
@@ -274,39 +215,32 @@ Potential GitHub Actions checks include:
 - dbt parse/compile;
 - dbt tests/build in a safe environment;
 - SQL or Python quality checks when applicable;
-- Terraform fmt;
-- Terraform validate;
-- Terraform plan when safe and appropriate;
-- documentation/repository checks.
+- Terraform fmt/validate/plan where safe;
+- repository/documentation checks.
 
-CI must be designed to avoid uncontrolled cloud cost and accidental production
-changes.
+CI must avoid uncontrolled cloud cost and accidental production changes.
 
 ### Security and credentials
 
 Credentials must remain outside version control.
 
-The final design should prefer short-lived or environment-managed credentials
-over committed key files wherever practical.
+Prefer short-lived or environment-managed credentials over committed key files where practical.
 
-Exact authentication strategy is a Phase 0/Phase 1 decision.
+The exact authentication strategy is a Phase 0/Phase 1 decision.
 
 ## Environment concept
 
-Expected environments are at least conceptual:
+At minimum, the project should distinguish:
 
 - local development;
 - CI validation;
 - cloud analytical resources.
 
-Whether separate BigQuery datasets/projects are needed for dev/CI/final use
-must be justified against cost and complexity.
+Separate GCP projects or BigQuery datasets for development/CI/final use should be added only when justified by cost and complexity.
 
-## Intended future repository areas
+## Likely future repository structure
 
-Implementation folders should be created only when their phase begins.
-
-Likely future areas:
+Implementation folders should be created only when the relevant phase begins.
 
     ingestion/
     dbt/
@@ -315,20 +249,19 @@ Likely future areas:
     tests/
     docs/
 
-Potential additional areas may be added only when the implemented architecture
-requires them.
+This tree is illustrative, not an instruction to create these folders now.
 
 ## Architecture principles
 
 - Give every technology a clear responsibility.
-- Learn important native BigQuery behavior before hiding it behind abstractions.
-- Prefer simple architecture until requirements justify complexity.
+- Learn native BigQuery behavior before hiding it behind abstractions.
+- Prefer the simplest architecture that satisfies approved requirements.
 - Preserve source-to-metric traceability.
 - Keep reusable transformation logic upstream of visualization when practical.
 - Make important assumptions explicit.
 - Validate important transformations and reconciliations.
-- Optimize from evidence, not from portfolio decoration.
+- Optimize from evidence, not portfolio decoration.
 - Control cloud cost deliberately.
 - Distinguish intended architecture from implemented architecture.
 - Distinguish implementation from validated runtime behavior.
-- Do not infer success solely from documentation or code presence.
+- Do not infer success from documentation or code presence alone.
