@@ -10,108 +10,106 @@ Allowed phase states:
 - `current`
 - `closed`
 
-A phase may start only after:
+A roadmap entry records planned work. It does **not** authorize execution.
 
-1. explicit user authorization;
+### Start a phase
+
+A phase may start only when:
+
+1. the user explicitly authorizes it;
 2. all required predecessor phases are closed;
 3. required predecessor handoff information is available.
 
-A roadmap entry does NOT authorize execution.
+### Close a phase
 
 A phase closes only when:
 
-1. its required scope is completed;
+1. required scope is complete;
 2. exit checks have been performed;
 3. results are recorded in a phase validation record;
-4. a phase handoff/closeout has been written;
+4. a phase handoff/closeout exists;
 5. affected authoritative documents are updated;
 6. CURRENT_STATE is updated;
 7. required repository changes are committed;
-8. publication requirements for that phase are satisfied.
+8. publication requirements are satisfied.
 
 A local commit alone does not prove publication.
 
 Do not automatically start the next phase after closing one.
 
-Material scope/architecture changes must be recorded in DECISIONS.md before
-the affected implementation proceeds.
+Material scope or architecture changes must be recorded in DECISIONS.md before the affected implementation proceeds.
 
-## Plan
+## Phase overview
 
-| Phase | Name | Primary scope | Dependency |
+| Phase | Name | Main outcome | Dependency |
 | --- | --- | --- | --- |
-| 0 | Formal Project Design | Select dataset/source, business problem, stakeholders, KPIs, requirements, architecture, cost constraints, modeling strategy, Terraform/CI goals, and phase acceptance criteria | None |
-| 1 | Repository and Cloud Foundation | Finalize implementation repository structure; establish GCP project strategy, BigQuery foundation, authentication, environment conventions, Terraform foundation for approved resources, and reproducible local setup | Phase 0 closed |
-| 2 | Source Acquisition, Ingestion and Raw Layer | Acquire data reproducibly; implement ingestion; load BigQuery raw/source-aligned data; preserve traceability; profile schema/volume; validate source-to-load reconciliation | Phase 1 closed |
-| 3 | BigQuery Native Analytics and dbt Foundation | Exercise native BigQuery querying/modeling concepts; configure dbt; declare sources; establish staging conventions and initial tests without hiding warehouse fundamentals | Phase 2 closed |
-| 4 | Analytical Modeling | Build staging/intermediate/marts as approved; dimensional or equivalent analytical model; facts/dimensions; reusable metric logic; appropriate materializations | Phase 3 closed |
-| 5 | Data Quality, Documentation and Performance | Expand dbt tests, business-rule tests, reconciliation, dbt docs/lineage, partitioning/clustering, query optimization, incremental processing if justified, and cost analysis | Phase 4 closed |
-| 6 | Power BI Analytics | Build final semantic/reporting layer, DAX where appropriate, dashboard/report pages, interactions, KPI presentation, and documented business insights | Phase 5 closed |
-| 7 | CI/CD and Infrastructure Hardening | Complete/expand Terraform for justified resources; implement safe GitHub Actions workflows for dbt, Terraform and other applicable checks; document environment/security approach | Phase 6 closed |
-| 8 | Final Validation and Portfolio Release | Reproduce end-to-end workflow, audit documentation and decisions, validate architecture, finalize README/screenshots, record limitations/costs, and produce release-quality handoff | Phase 7 closed |
+| 0 | Formal Project Design | Approved source, business problem, architecture, model strategy, cost controls, and acceptance criteria | None |
+| 1 | Repository and Cloud Foundation | Reproducible local/GCP foundation, BigQuery baseline, authentication, and approved Terraform foundation | Phase 0 closed |
+| 2 | Source Acquisition, Ingestion and Raw Layer | Reproducible acquisition and reconciled source-aligned BigQuery raw data | Phase 1 closed |
+| 3 | BigQuery Native Analytics and dbt Foundation | Native BigQuery practice plus configured dbt sources, staging conventions, and initial tests | Phase 2 closed |
+| 4 | Analytical Modeling | Approved staging/intermediate/marts and dimensional or equivalent analytical model | Phase 3 closed |
+| 5 | Data Quality, Documentation and Performance | Expanded tests, reconciliation, dbt docs/lineage, cost review, and evidence-based optimization | Phase 4 closed |
+| 6 | Power BI Analytics | Business-facing semantic/reporting layer and documented analytical insights | Phase 5 closed |
+| 7 | CI/CD and Infrastructure Hardening | Safe automation for dbt, Terraform, validation, and environment/security practices | Phase 6 closed |
+| 8 | Final Validation and Portfolio Release | Reproducible end-to-end release with complete portfolio documentation and evidence | Phase 7 closed |
 
 ## Phase 0 — Formal Project Design
+
+Phase 0 defines what GridPulse will actually build. It is a design phase, not an implementation shortcut.
 
 ### Goals
 
 - choose and justify the dataset/source;
-- define the business scenario;
-- establish primary stakeholders/personas;
+- define the business scenario and stakeholders;
 - define analytical questions and KPIs;
-- inspect source characteristics;
 - establish source and analytical grain;
-- decide ingestion approach;
+- decide the ingestion approach;
 - determine GCP/free-tier constraints;
-- design logical and physical BigQuery layer responsibilities;
+- design BigQuery layer responsibilities;
 - define which BigQuery concepts must be learned natively;
-- design dbt layer responsibilities;
-- propose the final analytical/dimensional model;
-- define Power BI analytical requirements;
-- confirm cost controls;
+- define dbt layer responsibilities;
+- propose the analytical/dimensional model;
+- define Power BI requirements;
+- establish cost controls;
 - identify Terraform scope;
 - define safe CI/CD goals;
-- define data-quality/reconciliation strategy;
+- define data-quality and reconciliation strategy;
 - define acceptance criteria for later phases.
 
-### Phase 0 expected outputs
+### Expected outputs
 
-At minimum:
+Phase 0 should produce, at minimum:
 
 - approved PROJECT_SPEC;
 - approved intended ARCHITECTURE;
-- dataset/source selection;
+- selected dataset/source;
 - business questions and KPI definitions;
-- initial data model decision;
-- major tooling decisions recorded;
+- initial data-model decision;
+- recorded major tooling decisions;
 - reviewed roadmap;
-- explicit cost/security constraints;
-- validation criteria for Phase 0;
-- Phase 0 validation record;
+- explicit cost and security constraints;
+- Phase 0 validation criteria and record;
 - Phase 0 handoff;
-- CURRENT_STATE update.
+- updated CURRENT_STATE.
 
 ### Exit criteria
 
 Phase 0 cannot close until:
 
 - PROJECT_SPEC reflects approved scope;
-- ARCHITECTURE contains an approved intended design;
+- ARCHITECTURE reflects an approved intended design;
 - dataset/source and business problem are confirmed;
 - key architecture/tool decisions are recorded;
-- later roadmap phases are reviewed and corrected if required;
-- Phase 0 validation record exists and supports closure;
-- Phase 0 handoff exists;
+- later roadmap phases have been reviewed and corrected where required;
+- Phase 0 validation supports closure;
+- a Phase 0 handoff exists;
 - CURRENT_STATE identifies Phase 0 as closed;
-- the phase's coherent documentation state is published as required.
+- the coherent Phase 0 documentation state is published as required.
 
-## Phase evolution
+## How the roadmap may evolve
 
-The roadmap is intentionally high-level before Phase 0.
+This roadmap is intentionally high-level before Phase 0.
 
-Phase 0 is expected to refine later phase names, boundaries, deliverables, and
-exit criteria.
+Phase 0 may refine later phase names, boundaries, deliverables, and exit criteria.
 
-Changing future phases is allowed when justified and recorded.
-
-Removing a technology because it is not justified is preferable to keeping it
-only for portfolio breadth.
+Removing a technology because it is not justified is preferable to keeping it only for portfolio breadth.
