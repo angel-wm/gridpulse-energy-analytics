@@ -3,6 +3,12 @@
 Before substantial work, read [REPO_CONTEXT.md](REPO_CONTEXT.md) and follow its
 task-specific loading rules.
 
+For repository documentation work, use the locally installed
+`.agents/skills/repository-documentation-readability/SKILL.md`. Load its
+references progressively according to that skill. GridPulse's native semantics,
+authority rules, lifecycle, and required structures always take precedence over
+presentation guidance.
+
 ## Authority
 
 Chat history, assistant memory, Project memory, and previous explanations are
