@@ -23,7 +23,7 @@ The project should demonstrate how raw analytical data can be:
 5. validated through automated data-quality checks;
 6. optimized for analytical workloads and cost;
 7. exposed through business-ready marts;
-8. consumed through Power BI as the primary deliverable and a small supplementary Looker Studio report using a free data path;
+8. consumed through Power BI as the required BI deliverable; optionally, after core release, demonstrated through a small Looker Studio experiment using a free data path;
 9. supported by reproducible infrastructure and CI/CD where justified.
 
 The project must resemble a realistic professional data platform, not a
@@ -40,7 +40,7 @@ demonstrating:
 - cloud analytical warehousing;
 - dimensional / analytical modeling;
 - data quality;
-- Power BI consumption of curated warehouse models, and a deliberately small Looker Studio companion on consistent KPIs;
+- Power BI consumption of curated warehouse models; optionally, a small post-release Looker Studio experiment on the same KPIs;
 - Terraform and CI/CD where they naturally support the platform.
 
 Other portfolio projects are intended to cover Spark/Databricks, Snowflake,
@@ -172,9 +172,9 @@ Prefer Power BI Desktop and Import initially where compatible with dataset size
 and refresh needs. Assess text-based Power BI Project (PBIP) for version control.
 Do not make Pro/PPU paid sharing a project completion requirement.
 
-### Looker Studio (Data Studio) — free companion
+### Looker Studio (Data Studio) — optional post-release experiment
 
-Looker Studio is a **secondary, compact report**, not another enterprise BI
+Looker Studio is a **secondary, optional post-release report (Phase 9)**, not another enterprise BI
 platform. The default no-charge data path is a **bounded reproducible CSV
 export** of curated BigQuery/dbt results and the documented free Looker Studio
 CSV-file upload connector. Google Sheets may be assessed if equally free and
@@ -186,9 +186,10 @@ append-on-upload behavior (avoid double-counting when refreshing). Reuse
 approved KPIs and document dataset freshness. No paid Looker/Looker Studio Pro
 subscription or BigQuery billing activation is necessary for this deliverable.
 
-An optional *post-release* direct BigQuery integration is recorded in D-019
-for research only; it requires a new explicit approval and acceptance of
-residual billing risk.
+The entire Phase 9 experiment is separately authorized and is not part of
+core-project success. An optional **direct** BigQuery integration is recorded
+in D-019 for research only; it requires **another** explicit approval and
+acceptance of residual billing risk.
 
 ### Terraform
 
@@ -257,7 +258,7 @@ The completed project should provide:
 - reconciliation between important layers;
 - documented KPIs and metric definitions;
 - primary Power BI report/dashboard, reproducible without paid sharing or a required Google Cloud billing account;
-- compact Looker Studio report using a validated free CSV or equivalent data source, aligned to a subset of approved metrics;
+- optional, after core release only: compact Looker Studio report from a validated free CSV or equivalent data source, aligned with approved metrics; it must not block Phase 8 closure;
 - reproducible setup instructions;
 - technical documentation;
 - phase-based validation evidence.
@@ -303,8 +304,8 @@ generate charges. Staying below these two limits alone does **not** guarantee
 zero billing across Google Cloud.
 
 Phase 0 must demonstrate that the chosen dataset, raw/staging/marts footprint,
-refresh/rebuild approach, dbt materializations, CI execution, Power BI and the compact Looker Studio
-report, and any proposed Terraform/IAM resources can work with no billing
+refresh/rebuild approach, dbt materializations, CI execution, Power BI, and any proposed Terraform/IAM
+resources can work with no billing
 account. Do not assume a live BigQuery-to-Power BI connector works without
 billing; evaluate a documented, reproducible bounded export/Import workflow
 if required.
@@ -332,6 +333,38 @@ Primary references:
 https://docs.cloud.google.com/bigquery/docs/sandbox
 https://cloud.google.com/bigquery/pricing
 https://docs.cloud.google.com/bigquery/docs/best-practices-costs
+
+## Sandbox-compatible batch workflow and future portability
+
+The dataset and business scenario are still undecided. During Phase 0,
+explicitly ask whether the intended workload requires continuously arriving
+records, late corrections, CDC, upserts or history preservation. A historical,
+reproducible, **batch-first** dataset is preferred if analytically rich enough.
+
+Sandbox does **not** support DML `INSERT`, `UPDATE`, `DELETE` or `MERGE`,
+but ordinary SELECT queries, views and relevant table creation (DDL /
+CREATE TABLE AS SELECT) can support many useful dbt workflows. dbt `view`,
+`ephemeral`, and tested `table` materializations may suffice for the main
+pipeline. **Do not assume** every dbt command or materialization works in
+Sandbox until the chosen adapter/version and permissions are exercised;
+incremental `merge` / `insert_overwrite` workflows commonly emit DML and
+are not part of the default executable scope. A full rebuild is not the same
+as a row-level `UPDATE`.
+
+For an eventual new environment, require a documented **portability bundle**:
+- legal, reproducible source acquisition and checksum/schema/grain notes;
+- configuration templates without credentials, required versions/adapters
+  and environment-specific BigQuery dataset/project settings;
+- versioned SQL, dbt sources/models/macros/tests and approved KPI definitions;
+- bounded and reproducible ingestion/rebuild commands plus measured validation;
+- known Sandbox limitations (60-day expiry and non-refundable lifetime storage);
+- reproducible curated export contract, Power BI project/report artifacts,
+  and safe CSV handling for optional Looker Studio;
+- a migration/rebuild playbook that marks what was actually tested versus
+  merely planned.
+
+Never make activating billing or migrating required for completing Phases
+0–8. A later billed environment must be separately approved (D-019).
 
 ## Dataset-dependent storage optimization
 
@@ -381,7 +414,7 @@ GridPulse should provide meaningful, hands-on practice with:
 - dimensional modeling;
 - data quality and reconciliation;
 - Power BI;
-- Looker Studio reporting through a free import-based data source;
+- optional post-release Looker Studio reporting through a free import-based data source;
 - DAX;
 - Terraform;
 - GitHub Actions / CI/CD.
@@ -441,7 +474,7 @@ GridPulse is successful when:
 - architecture and decisions are documented;
 - BigQuery/dbt behavior is demonstrably understood rather than hidden;
 - Power BI answers the approved business questions;
-- Looker Studio provides a compact report for aligned approved KPIs without requiring cloud billing;
+- Looker Studio remains an explicitly optional post-release experiment, not a core success condition;
 - Power BI delivery has an evidenced free data path, or a blocker is explicitly documented without enabling billing;
 - actual cloud/service charges for the project remain USD 0;
 - infrastructure and automation are reproducible where included;
@@ -478,4 +511,6 @@ Phase 0 must resolve at least:
 - Which local free dbt distribution and version work with the adapter and Sandbox constraints?
 - How will Sandbox 60-day expiry and non-DML restrictions be handled and documented?
 - Can OIDC/Workload Identity Federation be configured in the zero-billing environment, or must cloud CI be deferred?
+- Does the source require incremental DML, correction/upsert, or CDC; could batch reload and bounded table rebuild satisfy its actual business rules?
+- What repeatable export and portable source/dbt/Power BI assets must be preserved before Sandbox expiry or any later authorized move to another environment?
 - What validation and closure criteria apply to every later phase?
