@@ -22,7 +22,7 @@ Repository context status:
 
 The published documentation describes intended work only. No cloud resources,
 datasets, pipelines, dbt project, Terraform-managed infrastructure, CI/CD
-workflow, or Power BI report should be inferred from repository publication.
+workflow, Power BI report, or Looker Studio report should be inferred from repository publication.
 
 ## What is confirmed
 
@@ -35,7 +35,7 @@ The following project direction has been approved at a conceptual level:
 - primary transformation framework: dbt;
 - SQL is the primary transformation language;
 - Python may support ingestion or utilities when justified;
-- sole BI reporting layer: Power BI (Desktop/Import-first where appropriate, with PBIP considered for reproducibility);
+- primary BI reporting layer: Power BI (Desktop/Import-first where appropriate, with PBIP considered for reproducibility), plus a small Looker Studio report using a free curated CSV import;
 - Terraform and GitHub Actions should be used where technically justified;
 - the GridPulse cost constraint is now strict USD 0 actual charges, with an unbilled BigQuery Sandbox-first design; no billing activation or paid cloud services are authorized;
 - safe CI and data-quality controls should begin incrementally in early phases rather than be postponed to the hardening phase;
@@ -71,6 +71,7 @@ Still unresolved:
 - Power BI semantic model and report structure;
 - whether the entire desired BigQuery/dbt design is compatible with Sandbox no-DML, cumulative lifetime storage, and 60-day expiry;
 - reproducible Power BI delivery without paid service sharing or mandatory GCP billing;
+- validation of Looker Studio free CSV upload/refresh and bounded export size;
 - dataset-dependent capacity estimate for cumulative Sandbox storage, duplicated layers, model materializations and rebuilds;
 - exact Terraform scope;
 - exact GitHub Actions / CI/CD workflow;
@@ -82,7 +83,7 @@ These must be resolved through Phase 0 or later authorized design decisions.
 
 No implementation phase is authorized.
 
-The user explicitly authorized **documentation-level** updates to the roadmap, authentication requirements, strict zero-charge controls and BI scope. Decision D-016 supersedes D-012: Power BI is the only planned BI deliverable; Looker Studio is removed. Decision D-017 defers selection of storage/materialization optimizations until the dataset is chosen and sized. These approvals do **not** start Phase 0 and do **not** authorize enabling billing, subscribing to paid products, creating cloud infrastructure, or executing cloud work.
+The user explicitly authorized **documentation-level** updates to the roadmap, authentication requirements, strict zero-charge controls and BI scope. Decision D-018 supersedes D-016 (which had superseded D-012): Looker Studio is restored as a compact free CSV-fed companion to the primary Power BI report. Decision D-017 defers selection of storage/materialization optimizations until the dataset is chosen and sized. D-019 records a possible future direct billing-enabled BI connection for study only, with no authorization to enable billing or accept financial charges. These approvals do **not** start Phase 0 and do **not** authorize enabling billing, subscribing to paid products, creating cloud infrastructure, or executing cloud work.
 
 When the user explicitly chooses to begin GridPulse, the authorized next work
 is **Phase 0 — Formal Project Design**.
