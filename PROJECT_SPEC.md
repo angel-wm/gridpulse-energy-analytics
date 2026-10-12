@@ -23,7 +23,7 @@ The project should demonstrate how raw analytical data can be:
 5. validated through automated data-quality checks;
 6. optimized for analytical workloads and cost;
 7. exposed through business-ready marts;
-8. consumed through Power BI;
+8. consumed through Power BI as the primary BI deliverable and a complementary smaller Looker Studio report;
 9. supported by reproducible infrastructure and CI/CD where justified.
 
 The project must resemble a realistic professional data platform, not a
@@ -40,7 +40,7 @@ demonstrating:
 - cloud analytical warehousing;
 - dimensional / analytical modeling;
 - data quality;
-- Power BI consumption of curated warehouse models;
+- Power BI consumption of curated warehouse models, plus a focused Looker Studio companion;
 - Terraform and CI/CD where they naturally support the platform.
 
 Other portfolio projects are intended to cover Spark/Databricks, Snowflake,
@@ -119,6 +119,12 @@ Expected responsibilities:
 dbt is central to GridPulse, but it must not hide native BigQuery concepts that
 the user should understand first.
 
+The local **free dbt distribution** remains to be chosen in Phase 0 / Phase 3
+after checking current adapter support and compatibility. As of September 2026,
+dbt Labs distinguishes free local `dbt` (formerly Fusion) from the fully
+open-source `dbt OSS` (formerly Core v2); older Core v1 terminology must not
+silently dictate the choice. No paid dbt subscription or add-on is required.
+
 ### SQL
 
 Primary transformation and analytical language.
@@ -162,6 +168,16 @@ Business logic should live upstream in dbt/BigQuery when it is reusable data
 logic. DAX should handle semantic/presentation calculations that belong in the
 BI layer.
 
+Prefer Power BI Desktop and Import initially where compatible with dataset size
+and refresh needs. Assess text-based Power BI Project (PBIP) for version control.
+Do not make Pro/PPU paid sharing a project completion requirement.
+
+### Looker Studio (also called Data Studio)
+
+A **secondary, smaller** BI report to demonstrate familiarity with Google's reporting ecosystem. It should answer a focused subset of the same approved business questions using the same metric definitions as Power BI, without duplicating the whole semantic model.
+
+The standard/free reporting product is intended; Looker enterprise and paid Looker Studio Pro are outside scope. **Direct BigQuery connectivity from Looker Studio requires a Google Cloud billing account**, so Phase 0 must find and validate a free, reproducible alternative (for example, a bounded export from curated marts to an eligible free connector) or document a deferral. No billing account may be linked to satisfy this report requirement.
+
 ### Terraform
 
 Infrastructure as Code for reproducible cloud infrastructure where technically
@@ -193,6 +209,12 @@ Potential responsibilities:
 CI/CD design must account for secrets, cloud cost, environment separation, and
 the danger of triggering paid cloud work unnecessarily.
 
+Start with repository/static/no-cloud-cost checks. Add tests when ingestion
+and dbt models appear, not only in the final CI/CD hardening phase. If cloud
+jobs are authorized later, prefer OIDC + Workload Identity Federation,
+restricted repository/ref claims, and least-privilege access when feasible.
+Do not store long-lived service-account keys or activate billing for CI.
+
 ## Explicit non-goals
 
 Unless an approved decision changes the architecture, GridPulse will not use:
@@ -222,7 +244,8 @@ The completed project should provide:
 - automated data-quality checks;
 - reconciliation between important layers;
 - documented KPIs and metric definitions;
-- Power BI report/dashboard;
+- primary Power BI report/dashboard;
+- focused complementary Looker Studio report if a genuinely free data-delivery path is feasible, otherwise an explicitly documented no-billing blocker;
 - reproducible setup instructions;
 - technical documentation;
 - phase-based validation evidence.
@@ -243,19 +266,48 @@ The project should prioritize:
 - least unnecessary complexity;
 - security of credentials and secrets.
 
-## Cost constraint
+## Cost constraint — strict zero-billing gate
 
-The project should target zero or very low cost.
+**The requirement is USD 0 in actual charges, not an expectation of low cost.**
+The current authorization covers documentation decisions only; it does not
+authorize cloud implementation, account upgrades, billing activation, trials,
+subscriptions, chargeable resources, or chargeable workloads.
 
-Before enabling a resource that may create charges:
+**Preferred route:** a BigQuery Sandbox project with **no linked billing
+account or payment method for this project**. Google's published limits
+(verify again before use) include:
 
-1. identify the charging model;
-2. explain the risk;
-3. determine relevant free-tier/sandbox limits;
-4. choose safeguards;
-5. prefer bounded test data and query patterns while learning.
+- **10 GiB of Sandbox storage across its lifetime**, not a renewable monthly
+  10 GiB allowance; deleting stored data does not refund the allocation;
+- **1 TiB of query data processed per month** within the free allowance;
+- **60-day automatic expiration** of Sandbox tables, views, and partitions;
+- no DML statements or streaming ingestion, which may block some incremental
+  model patterns and automated refresh approaches.
 
-Cost-awareness is part of the engineering objective.
+BigQuery's **billing-enabled** free usage tier has different conditions: the
+first 10 GiB of storage per month and 1 TiB of on-demand query processing per
+month are free, but exceeding them or using other services/features can
+generate charges. Staying below these two limits alone does **not** guarantee
+zero billing across Google Cloud.
+
+Phase 0 must demonstrate that the chosen dataset, raw/staging/marts footprint,
+refresh/rebuild approach, dbt materializations, CI execution, two BI tools,
+and any proposed Terraform/IAM resources can work with no billing account.
+If a desired function requires billing, do not enable it: use a valid free
+alternative, reduce scope, or explicitly record the blocker/deferred capability.
+
+Where supported, additionally use dry runs/query estimates, conservative
+maximum-bytes-billed settings, bounded test inputs, partition-pruned queries
+and query quotas. These are **defense-in-depth controls**, not permission to
+activate billing. Alerts and budgets do not by themselves prove a USD 0 cap.
+Any change to this strict constraint requires a separate explicit user
+decision; simply authorizing project work is insufficient.
+
+Primary references:
+https://docs.cloud.google.com/bigquery/docs/sandbox
+https://cloud.google.com/bigquery/pricing
+https://docs.cloud.google.com/bigquery/docs/best-practices-costs
+https://cloud.google.com/looker/docs/studio/connect-to-google-bigquery
 
 ## Learning objectives
 
@@ -277,6 +329,7 @@ GridPulse should provide meaningful, hands-on practice with:
 - dimensional modeling;
 - data quality and reconciliation;
 - Power BI;
+- Looker Studio fundamentals and cross-BI KPI consistency;
 - DAX;
 - Terraform;
 - GitHub Actions / CI/CD.
@@ -336,6 +389,8 @@ GridPulse is successful when:
 - architecture and decisions are documented;
 - BigQuery/dbt behavior is demonstrably understood rather than hidden;
 - Power BI answers the approved business questions;
+- the companion Looker Studio report demonstrates a consistent subset of KPIs or its explicit free-access blocker is documented without enabling billing;
+- actual cloud/service charges for the project remain USD 0;
 - infrastructure and automation are reproducible where included;
 - the repository provides sufficient evidence for technical portfolio review;
 - the user can explain and defend the system without relying on memorized
@@ -362,5 +417,9 @@ Phase 0 must resolve at least:
 - Which dbt materializations are likely appropriate?
 - Which resources should Terraform manage?
 - What GitHub Actions workflows are safe and useful?
-- How will Power BI connect to the curated layer?
+- How will Power BI connect to the curated layer and how will PBIP/Import be validated without paid licensing?
+- How will the complementary Looker Studio report consume approved KPIs without a BigQuery-linked billing account?
+- Which local free dbt distribution and version work with the adapter and Sandbox constraints?
+- How will Sandbox 60-day expiry and non-DML restrictions be handled and documented?
+- Can OIDC/Workload Identity Federation be configured in the zero-billing environment, or must cloud CI be deferred?
 - What validation and closure criteria apply to every later phase?
