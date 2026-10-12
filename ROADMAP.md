@@ -51,7 +51,7 @@ Material scope or architecture changes must be recorded in DECISIONS.md before t
 | 3 | BigQuery Native Analytics and dbt Foundation | Native BigQuery practice, verified free local dbt distribution, sources/staging, initial tests, and safe dbt CI checks | Phase 2 closed |
 | 4 | Analytical Modeling | Justified staging/intermediate/marts, dimension or equivalent models, tested metrics, and ongoing CI validation | Phase 3 closed |
 | 5 | Data Quality, Documentation and Performance | Deeper tests, reconciliation, dbt docs/lineage, cost review, and evidence-based optimization | Phase 4 closed |
-| 6 | Power BI Analytics | Complete Power BI report with tested KPIs and documented insights using a verified no-billing data delivery path | Phase 5 closed |
+| 6 | Business Intelligence: Power BI + free Looker Studio | Complete Power BI report and compact Looker Studio companion using bounded, reproducible free CSV exports; tested, aligned KPIs; no billing required | Phase 5 closed |
 | 7 | CI/CD and Infrastructure Hardening | Harden existing safe automation, Terraform scope, least-privilege identity, and environment/security practices | Phase 6 closed |
 | 8 | Final Validation and Portfolio Release | Reproducible end-to-end release with complete portfolio documentation, evidence, and verified zero spend | Phase 7 closed |
 
@@ -73,9 +73,11 @@ Phase 0 defines what GridPulse will actually build. It is a design phase, not an
 - define which BigQuery concepts must be learned natively;
 - define dbt layer responsibilities;
 - propose the analytical/dimensional model;
-- define Power BI as the sole BI deliverable, with a verified no-billing data-transfer or connector strategy (including a reproducible bounded export/import option);
+- define Power BI as the primary BI deliverable and a smaller Looker Studio companion, both using verified no-billing paths, preferably bounded, reproducible exports/imports;
 - assess Power BI Desktop/Import and text-based PBIP versioning, without assuming paid sharing features;
 - establish cost controls;
+- document direct Looker Studio -> BigQuery as an **optional post-release experiment candidate**, without activating billing or making it a project requirement;
+- distinguish daily BigQuery usage/byte limits from delayed monetary billing alerts and project shutdown functions;
 - identify Terraform scope;
 - define safe CI/CD goals, including early static/local checks and cloud-free PR validation;
 - select a free local dbt distribution only after confirming BigQuery adapter compatibility and required features;
