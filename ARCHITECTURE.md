@@ -10,7 +10,7 @@ Phase 0 must refine and approve this architecture before implementation.
 
 ## Architecture at a glance
 
-GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI, with a smaller complementary Looker Studio report using a verified no-charge data path.
+GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI as the sole BI deliverable.
 
     Energy source data
             ↓
@@ -24,14 +24,9 @@ GridPulse is intended to move energy data from source systems into a cloud analy
             ↓
         dbt marts
             ↓
-     Primary Power BI
-            +
-    Curated, bounded export (if needed)
-            ↓
-    Companion Looker Studio
-
-The Looker Studio path is conceptual. Do not assume that a direct
-Looker Studio-to-BigQuery connection is available without billing.
+         Power BI
+    (via a verified no-billing
+     data path, if needed)
 
 Cross-cutting concerns:
 
@@ -168,19 +163,12 @@ The report design remains unresolved until business questions and marts are appr
 
 ### Business Intelligence delivery and portability
 
-Power BI is the primary analytical deliverable and should provide the richer
-semantic/DAX and interactive report experience. Prefer Power BI Desktop with
-Import when practical and assess PBIP for source-controlled text artifacts.
-Do not depend on paid Power BI publishing/sharing for portfolio completion.
-
-Looker Studio (Data Studio) is a **small companion report**, using the same
-approved KPI definitions and bounded curated results. Because the direct
-BigQuery connector requires a billing account, Phase 0 must approve a
-genuinely free data delivery path (for example, a reproducible small export
-that an eligible free connector can read) or defer that path. No extra
-warehouse or data pipeline is justified just to power this second report.
-
-Do not use Looker enterprise or Looker Studio Pro subscriptions by default.
+Power BI is the **only planned BI report**. It should deliver the semantic/DAX
+and interactive reporting layer. Prefer Power BI Desktop with Import when
+appropriate and assess text-based PBIP for source control. Do not depend
+on paid Power BI sharing or an unverified billing-dependent direct BigQuery
+connection. During Phase 0, validate a genuinely no-billing connection or a
+small, reproducible export/import workflow from curated results.
 
 ## Cross-cutting engineering concerns
 
@@ -234,6 +222,18 @@ BigQuery decisions should consider:
 - explicitly documented fallback when feature/billing prerequisites conflict with USD 0.
 
 Optimization should be evidence-based.
+
+#### Dataset-dependent materialization and storage strategy
+
+Do not lock materializations until the Phase 0 dataset, grain, data volume,
+and BI query patterns are known. Estimate the **lifetime** Sandbox allocation
+consumed by raw loads, persisted staging/intermediate/marts, experiments and
+rebuilds, including reasonable headroom. Consider views and dbt ephemeral
+models to avoid unnecessary persisted duplicates, but evaluate their repeated
+query scans. Persist compact marts only where justified, avoid ornamental
+intermediate tables, and consider partitioning/clustering on the measured
+workload. Incremental strategies requiring DML may be unavailable in Sandbox.
+Document the chosen rationale and validate it later against real metrics.
 
 ### Infrastructure as Code
 
@@ -314,7 +314,7 @@ This tree is illustrative, not an instruction to create these folders now.
 - Preserve source-to-metric traceability.
 - Keep reusable transformation logic upstream of visualization when practical.
 - Treat dbt intermediate models as optional: add them only to centralize genuine reusable work, not as a mandatory hop.
-- Reuse approved KPI definitions across Power BI and Looker Studio, without duplicating business rules.
+- Preserve approved KPI definitions between BigQuery/dbt marts and the Power BI semantic layer, without duplicating business rules.
 - Make important assumptions explicit.
 - Validate important transformations and reconciliations.
 - Optimize from evidence, not portfolio decoration.
