@@ -445,7 +445,7 @@ Phase 0 evaluates feasibility and Phase 1 defines the identity approach; later a
 
 ## D-016 — Return to Power BI only; remove Looker Studio from GridPulse
 
-Status: **ACCEPTED**
+Status: **SUPERSEDED** by D-018
 
 Supersedes: **D-012**
 
@@ -493,6 +493,64 @@ PROJECT_SPEC, ARCHITECTURE, and ROADMAP require a documented capacity estimate a
 
 ---
 
+## D-018 — Retain free Looker Studio as a companion without cloud billing
+
+Status: **ACCEPTED**
+
+Supersedes: **D-016**
+
+### Context
+
+The user wants to learn Looker Studio in addition to Power BI, but explicitly prioritizes no monetary charges. A direct Looker Studio (now also called Data Studio) -> BigQuery connector requires an eligible Google Cloud billing account, while standard Looker Studio supports free CSV file uploads and other sources.
+
+### Decision
+
+Power BI remains the complete primary BI report and Looker Studio returns as a **small, complementary** report using a no-billing data path. The preferred candidate is a reproducible, bounded **CSV export of curated business results -> free Looker Studio CSV file upload**. Google Sheets may be evaluated as an alternative if it is clearly available and free for the intended workload.
+
+Maintain consistent KPI definitions across reports, show the data freshness/export process, and avoid duplicate rows when updating a Looker Studio CSV dataset because additional uploads append rather than replace data. Confirm connector availability and applicable upload quotas before implementation. Do not introduce Looker (enterprise), Looker Studio Pro, new cloud hosting, or a mandatory direct BigQuery connector.
+
+### Rationale
+
+The second report demonstrates useful versatility without the risk and additional complexity of cloud-billed direct BI access.
+
+### Consequences
+
+Update ROADMAP, PROJECT_SPEC, ARCHITECTURE, README, CURRENT_STATE and AGENTS. BigQuery Sandbox-first, USD 0 and phase authorization rules remain unchanged. The new decision is a **documentation scope approval only**, not authorization to start Phase 0.
+
+---
+
+## D-019 — Defer any billing-enabled BI experiment and research layered cost safeguards
+
+Status: **ACCEPTED**
+
+### Context
+
+After completing the primary GridPulse project, the user might wish to evaluate a direct Looker Studio -> BigQuery integration by linking a billing account, but only if the risk can be understood and reduced substantially. The user has **not authorized** any billing activation or actual experiment.
+
+### Decision
+
+Record the direct integration as an **optional post-release research/experiment candidate**, not a delivery requirement. It requires a separate, explicit, future authorization to enable billing and to accept any residual risk of charges. If the user retains a non-negotiable USD 0 charge guarantee, **do not conduct** a billing-enabled experiment.
+
+Before making any such recommendation, recheck current Google Cloud features, costs and service eligibility. Evaluate in this priority order:
+
+1. Use a distinct disposable project, least privilege, very small bounded data/queries, and disable unrelated services/automated schedules.
+2. Evaluate query dry runs, maximum bytes billed per query, and **conservative daily project/user custom query quotas**. These apply to on-demand query processing and are approximate; they do not cap all Cloud charges or precisely guarantee stopping under the free monthly allowance.
+3. Add Cloud Billing budgets/alerts as monitoring only; alert-only budgets are not hard spending caps. Google documents delays in reported costs and notifications.
+4. Examine the official Cloud Billing -> Pub/Sub -> Cloud Run function -> Cloud Billing API disconnection pattern. It is **reactive, not guaranteed** to prevent a charge, may itself require billable services, and disabling billing may shut down services and affect data.
+5. Check the eligibility of native **spend-cap budgets**, which are service-specific and, according to Google's October 2026 eligible list, **do not include BigQuery**. Do not present these as a BigQuery hard cap. Even eligible caps can have non-instant enforcement and overages.
+
+Do **not** assume that an alert/function set at '90% of the free tier' acts on free-tier *consumption*; billing-based alerts may respond only once monetary costs are recorded. Resource-usage monitoring and quota controls are separate from monetary budget alerts.
+
+### Rationale
+
+Preserves the user's option to learn native BI connectivity while explicitly rejecting a false '$0 guarantee' from delayed reactive cost shutdown.
+
+### Consequences
+
+No billing account, budget, function, Pub/Sub topic, or cloud infrastructure is created by this decision. Keep the optional evaluation after Phase 8 or in a separately authorized experiment; don't move the main project off Sandbox by default.
+
+---
+
 ## Reference checks for Phase 0
 
 These are **external documentation references, not a claim that services were deployed**. Provider limits and terminology must be rechecked before execution:
@@ -504,3 +562,13 @@ These are **external documentation references, not a claim that services were de
 - GitHub OIDC: https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-google-cloud-platform
 - dbt distributions (September 2026): https://docs.getdbt.com/blog/comparing-dbt-and-dbt-oss
 
+
+Additional official references for the deferred experiment:
+
+- Free Looker Studio CSV upload: https://docs.cloud.google.com/looker/docs/studio/upload-csv-files-to-looker-studio
+- Direct BigQuery connector: https://docs.cloud.google.com/data-studio/connect-to-google-bigquery
+- BigQuery daily custom quotas: https://docs.cloud.google.com/bigquery/docs/custom-quotas
+- BigQuery cost controls: https://docs.cloud.google.com/bigquery/docs/best-practices-costs
+- Billing budgets and limits: https://docs.cloud.google.com/billing/docs/how-to/budgets
+- Programmatic billing shutdown (not guaranteed): https://docs.cloud.google.com/billing/docs/how-to/disable-billing-with-notifications
+- Spend cap budget service eligibility: https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps
