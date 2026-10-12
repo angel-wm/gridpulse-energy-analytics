@@ -10,7 +10,7 @@ Phase 0 must refine and approve this architecture before implementation.
 
 ## Architecture at a glance
 
-GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI as the primary BI deliverable and a small Looker Studio companion through a free curated export.
+GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI as the required core BI deliverable. A small Looker Studio report is a separately authorized optional post-release experiment.
 
     Energy source data
             ↓
@@ -24,12 +24,13 @@ GridPulse is intended to move energy data from source systems into a cloud analy
             ↓
         dbt marts
             ↓
-    Curated results
+    Power BI (core, Phase 6)
             ↓
-    Bounded export/import
-          ↙   ↘
-      Power BI  Looker Studio
-       main      companion
+    Core portfolio release (Phase 8)
+
+    Optional, after Phase 8 and separate approval:
+    dbt curated marts -> bounded CSV export
+                     -> Looker Studio dashboard (Phase 9)
 
 Cross-cutting concerns:
 
@@ -173,12 +174,14 @@ on paid Power BI sharing or an unverified billing-dependent direct BigQuery
 connection. During Phase 0, validate a genuinely no-billing connection or a
 small, reproducible export/import workflow from curated results.
 
-Looker Studio (Data Studio) is a **small companion** reporting on the same
+Looker Studio (Data Studio) is a **small optional Phase 9 experiment after the
+core project is released**, reporting on the same
 approved KPI definitions, through a repeatable bounded CSV export and the
 free CSV upload source, subject to access and size validation. Since uploads
 append rather than replace records, document a deduplicated refresh path.
-Direct Looker Studio-to-BigQuery is *not* part of the core architecture; it is
-only a candidate for a separate, explicitly authorized post-release experiment.
+Direct Looker Studio-to-BigQuery is *not* part of the core architecture or
+required Phase 9 execution; it is only a candidate for another separately
+authorized post-release experiment. Phase 8 is complete with Power BI.
 
 ## Cross-cutting engineering concerns
 
@@ -257,6 +260,25 @@ delayed, custom query quotas are approximate and apply only to on-demand
 queries, and even automatic billing shutdown cannot guarantee USD 0 costs.
 Spend-cap budgets currently do not list BigQuery among eligible services.
 Do not deploy any of these billed-project components without specific approval.
+
+### Batch-first execution and migration readiness
+
+A no-DML solution is realistic **if** Phase 0 selects an analytically useful,
+reproducible historical/batch source. dbt can build SQL views and appropriate
+tables through supported DDL rather than per-row mutations; test adapter/version
+behavior before claiming an executable pipeline. `UPDATE`, `INSERT`,
+`DELETE`, `MERGE`, and common DML-based incremental strategies are
+unavailable in Sandbox. Do not confuse a `SELECT` transformation or
+`CREATE TABLE AS SELECT` rebuild with an `UPDATE` statement.
+
+If the business problem requires continual ingestion, late corrections, CDC
+or incremental upserts, evaluate a compliant bounded batch rebuild or record
+the capability as deferred; do not pretend it was tested. Preserve
+source-provenance notes, non-secret environment templates, dbt code/model
+contracts/tests, observed quality results, reproducible load/rebuild commands,
+BI data-export contracts and versioned Power BI artifacts. Document the
+steps for recreating them in a future separately approved environment, without
+presuming that Sandbox datasets survive 60-day expiration or upgrades.
 
 ### Infrastructure as Code
 
@@ -337,7 +359,7 @@ This tree is illustrative, not an instruction to create these folders now.
 - Preserve source-to-metric traceability.
 - Keep reusable transformation logic upstream of visualization when practical.
 - Treat dbt intermediate models as optional: add them only to centralize genuine reusable work, not as a mandatory hop.
-- Preserve approved KPI definitions between BigQuery/dbt marts, Power BI, and the smaller Looker Studio report, without duplicating business rules.
+- Preserve approved KPI definitions between BigQuery/dbt marts and Power BI; reuse them if the optional Looker Studio experiment later runs, without duplicating business rules.
 - Make important assumptions explicit.
 - Validate important transformations and reconciliations.
 - Optimize from evidence, not portfolio decoration.
