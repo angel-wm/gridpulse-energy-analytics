@@ -39,6 +39,14 @@ Do not begin a new phase unless:
 
 Do not automatically begin the next phase after a closeout.
 
+**Cost authorization is separate from phase authorization.** The user requires
+USD 0 actual charges. Do not activate/link billing, paid subscriptions or
+trials, create potentially billable cloud resources, or start paid jobs merely
+because documentation or a phase is approved. Default to unbilled BigQuery
+Sandbox feasibility. If blocked by billing-required features, describe the
+limitation and propose free substitutes or deferral; never silently relax the
+constraint.
+
 ## State and claims
 
 Never claim that:
@@ -107,6 +115,12 @@ state.
 
 Do not introduce technologies merely for portfolio breadth.
 
+Power BI is the primary BI report, with a smaller complementary Looker Studio
+report. Do not equate free Looker Studio with the paid Looker platform or assume
+its direct BigQuery connector is available without a billing account. Choose
+a compatible local free dbt distribution using current release/adapter evidence,
+not stale terminology.
+
 If a proposed technology is not part of the approved architecture:
 
 1. explain the need;
@@ -143,6 +157,18 @@ When closing a phase:
 - distinguish local commit from confirmed publication.
 
 A phase is not closed merely because implementation appears finished.
+
+## Early validation and least-privilege access
+
+Safe, no-cloud-cost checks begin early. Validate ingestion as soon as it exists,
+introduce dbt tests and bounded CI alongside models, and use Phase 7 to harden
+that automation rather than first introduce CI.
+
+For GitHub-to-GCP authentication, prefer OIDC / Workload Identity Federation
+where the zero-billing setup supports it. Restrict repository/ref identity
+claims and grant minimal IAM permissions. Do not create permanent JSON service
+account keys for convenience. If no unbilled secure option exists, keep CI
+local and mark the cloud integration deferred.
 
 ## Repository hygiene
 
