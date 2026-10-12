@@ -115,11 +115,17 @@ state.
 
 Do not introduce technologies merely for portfolio breadth.
 
-Power BI is the primary BI report, with a smaller complementary Looker Studio
-report. Do not equate free Looker Studio with the paid Looker platform or assume
-its direct BigQuery connector is available without a billing account. Choose
-a compatible local free dbt distribution using current release/adapter evidence,
-not stale terminology.
+Power BI is the **only** planned BI report; Looker Studio was removed by
+accepted D-016, superseding D-012. The Power BI delivery path must be verified
+under the no-billing rule, using a reproducible bounded export/import where
+necessary. Choose a compatible local free dbt distribution using current
+release/adapter evidence, not stale terminology.
+
+The raw/staging/intermediate/marts architecture does not require materializing
+every layer as a table. After dataset selection, estimate cumulative **lifetime**
+Sandbox storage and justify views, dbt ephemeral models and only necessary
+persisted marts against query-scan cost, performance, and reproducibility.
+Do not prematurely assume DML-based incremental models work in Sandbox.
 
 If a proposed technology is not part of the approved architecture:
 
