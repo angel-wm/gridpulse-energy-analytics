@@ -10,7 +10,7 @@ Phase 0 must refine and approve this architecture before implementation.
 
 ## Architecture at a glance
 
-GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI.
+GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI, with a smaller complementary Looker Studio report using a verified no-charge data path.
 
     Energy source data
             ↓
@@ -24,7 +24,14 @@ GridPulse is intended to move energy data from source systems into a cloud analy
             ↓
         dbt marts
             ↓
-         Power BI
+     Primary Power BI
+            +
+    Curated, bounded export (if needed)
+            ↓
+    Companion Looker Studio
+
+The Looker Studio path is conceptual. Do not assume that a direct
+Looker Studio-to-BigQuery connection is available without billing.
 
 Cross-cutting concerns:
 
@@ -34,7 +41,7 @@ Cross-cutting concerns:
 | Terraform | Reproducible approved cloud infrastructure |
 | GitHub Actions | Safe automated validation and CI/CD |
 | Git / GitHub | Version control, review, publication, and handoff |
-| Cost / security | Constraints that shape every implementation decision |
+| Cost / security | Strict zero-billing/no-charge constraints and least-privilege identity shape every implementation decision |
 
 ## Core design principle
 
@@ -159,6 +166,22 @@ Reusable transformation logic should remain upstream when practical instead of b
 
 The report design remains unresolved until business questions and marts are approved.
 
+### Business Intelligence delivery and portability
+
+Power BI is the primary analytical deliverable and should provide the richer
+semantic/DAX and interactive report experience. Prefer Power BI Desktop with
+Import when practical and assess PBIP for source-controlled text artifacts.
+Do not depend on paid Power BI publishing/sharing for portfolio completion.
+
+Looker Studio (Data Studio) is a **small companion report**, using the same
+approved KPI definitions and bounded curated results. Because the direct
+BigQuery connector requires a billing account, Phase 0 must approve a
+genuinely free data delivery path (for example, a reproducible small export
+that an eligible free connector can read) or defer that path. No extra
+warehouse or data pipeline is justified just to power this second report.
+
+Do not use Looker enterprise or Looker Studio Pro subscriptions by default.
+
 ## Cross-cutting engineering concerns
 
 ### Data quality
@@ -177,7 +200,24 @@ Expected controls include:
 
 Use tests because they protect real assumptions, not because dbt supports them.
 
-### Cost and performance
+### Zero billing, Sandbox feasibility, and performance
+
+**USD 0 charges are a mandatory architecture gate.** Prefer an unbilled
+BigQuery Sandbox project; do not link a billing account or enable paid
+resources without a new, separate, explicit user decision.
+
+Google's published Sandbox conditions include a non-replenishing 10 GiB
+lifetime storage allocation, a 1 TiB/month query processing allowance,
+automatic 60-day table/view/partition expiry, and no DML or streaming.
+This means dbt incremental models that use `MERGE` or other DML must not
+be presumed available. Favor SQL views/tables and demonstrably supported
+materializations; unsupported advanced patterns may be designed and
+explained without executing them. Create a reproducible reload/rebuild
+plan for object expiration.
+
+Limits differ when billing is enabled, and staying within two BigQuery
+free-tier figures is **not** a universal guarantee against charges. Do
+not use a budget alert as the project's primary spending protection.
 
 BigQuery decisions should consider:
 
@@ -188,7 +228,10 @@ BigQuery decisions should consider:
 - materialization strategy;
 - incremental processing;
 - unnecessary rebuilds;
-- development versus full-data execution.
+- development versus full-data execution;
+- safe query estimates/dry runs and maximum bytes billed where applicable;
+- bounded dataset sizes, expected cumulative Sandbox storage, and restart/reload cost;
+- explicitly documented fallback when feature/billing prerequisites conflict with USD 0.
 
 Optimization should be evidence-based.
 
@@ -209,6 +252,10 @@ Not every resource must be managed by Terraform.
 
 ### CI/CD
 
+Introduce repository/static validation during the foundation phase, ingestion
+checks during acquisition, and dbt/model checks as soon as models exist.
+Phase 7 hardens rather than first introduces safe CI.
+
 Potential GitHub Actions checks include:
 
 - dbt dependency/install validation;
@@ -219,12 +266,20 @@ Potential GitHub Actions checks include:
 - repository/documentation checks.
 
 CI must avoid uncontrolled cloud cost and accidental production changes.
+Default to local/CI checks that do not invoke GCP. Any cloud-connected CI
+requires separately authorized feasibility and must preserve the zero-billing
+constraint.
 
 ### Security and credentials
 
 Credentials must remain outside version control.
 
 Prefer short-lived or environment-managed credentials over committed key files where practical.
+For GitHub-to-GCP workflows, prefer OIDC with Google Cloud Workload Identity
+Federation when necessary and feasible; bind trust to approved repository/ref
+claims and minimal IAM roles. Do not create service-account key files or a
+billable cloud environment just to demonstrate federation. Local development
+must use its own approved credential flow.
 
 The exact authentication strategy is a Phase 0/Phase 1 decision.
 
@@ -258,6 +313,8 @@ This tree is illustrative, not an instruction to create these folders now.
 - Prefer the simplest architecture that satisfies approved requirements.
 - Preserve source-to-metric traceability.
 - Keep reusable transformation logic upstream of visualization when practical.
+- Treat dbt intermediate models as optional: add them only to centralize genuine reusable work, not as a mandatory hop.
+- Reuse approved KPI definitions across Power BI and Looker Studio, without duplicating business rules.
 - Make important assumptions explicit.
 - Validate important transformations and reconciliations.
 - Optimize from evidence, not portfolio decoration.
