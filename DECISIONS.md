@@ -351,7 +351,7 @@ duplicating authoritative project information.
 
 ## D-012 — Keep Power BI primary and add complementary Looker Studio
 
-Status: **ACCEPTED**
+Status: **SUPERSEDED** by D-016
 
 ### Context
 
@@ -440,6 +440,56 @@ Short-lived identity federation limits credential exposure without making extra 
 ### Consequences
 
 Phase 0 evaluates feasibility and Phase 1 defines the identity approach; later authorized phases implement and validate it only if needed.
+
+---
+
+## D-016 — Return to Power BI only; remove Looker Studio from GridPulse
+
+Status: **ACCEPTED**
+
+Supersedes: **D-012**
+
+### Context
+
+The previously accepted companion Looker Studio deliverable introduced an extra BI integration and a potential billing-account requirement for direct BigQuery connectivity. Looker Studio itself can be used free of charge, but its native BigQuery connector requires a Google Cloud billing account. The user explicitly prefers removing the second BI deliverable rather than complicating GridPulse's strict zero-billing constraint.
+
+### Decision
+
+Keep **Power BI as the sole planned BI reporting deliverable**. Remove Looker Studio / Looker from active architecture, phase scope, functional requirements, and success criteria. Do not replace it with another tool merely to demonstrate tool breadth. This is not a claim that Looker Studio itself requires a paid subscription.
+
+Power BI Desktop, an Import-first approach when appropriate, and evaluation of text-based PBIP versioning remain planned. During Phase 0, verify an end-to-end Power BI data delivery path that works without linking a GCP billing account; a reproducible bounded export/import may be preferable to a live connector.
+
+### Rationale
+
+The portfolio should demonstrate deep, reproducible work with BigQuery, dbt, and Power BI, without imposing an unnecessary billing or integration risk.
+
+### Consequences
+
+ROADMAP Phase 6 returns to Power BI analytics only. PROJECT_SPEC, ARCHITECTURE, README, CURRENT_STATE and AGENTS align. D-012 is retained as historical context but is no longer authoritative for current BI scope.
+
+---
+
+## D-017 — Size the complete warehouse footprint before choosing materializations
+
+Status: **ACCEPTED**
+
+### Context
+
+BigQuery Sandbox has a non-replenishing lifetime storage quota; raw, staging and marts may materialize data repeatedly. A dataset smaller than 10 GiB can therefore still produce an excessive total or cumulative storage footprint.
+
+### Decision
+
+During Phase 0, once the actual source/dataset is chosen, estimate raw inputs, projected models, intermediate artifacts, repeated loads, and headroom under Sandbox's **lifetime** storage budget. Do not preselect a materialization strategy now. Evaluate production-relevant techniques where technically justified: views rather than unnecessary persisted copies; dbt ephemeral models for limited reusable SQL; selective, compact, business-ready mart tables; only justified intermediate layers; column pruning; partitioning/clustering based on measured query patterns; and carefully bounded test datasets.
+
+Account for tradeoffs: views and ephemeral models reduce persisted copies but can increase repeated query processing; rebuilds and replacement data may consume the non-refundable Sandbox storage allocation; incremental models requiring unsupported Sandbox DML cannot be assumed executable. Choose using expected storage, query scans, performance, correctness, and reproducibility, not simply smallest bytes on disk.
+
+### Rationale
+
+This makes storage optimization a real engineering design exercise while preserving the USD 0 constraint and avoiding premature choices before data characteristics are known.
+
+### Consequences
+
+PROJECT_SPEC, ARCHITECTURE, and ROADMAP require a documented capacity estimate and materialization rationale in Phase 0, then validation against actual measurements in later phases. Dataset selection is still pending and no infrastructure is authorized.
 
 ---
 
