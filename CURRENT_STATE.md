@@ -35,8 +35,11 @@ The following project direction has been approved at a conceptual level:
 - primary transformation framework: dbt;
 - SQL is the primary transformation language;
 - Python may support ingestion or utilities when justified;
-- final BI layer: Power BI;
+- primary BI layer: Power BI, with a smaller complementary Looker Studio report where feasible at zero charges;
 - Terraform and GitHub Actions should be used where technically justified;
+- the GridPulse cost constraint is now strict USD 0 actual charges, with an unbilled BigQuery Sandbox-first design; no billing activation or paid cloud services are authorized;
+- safe CI and data-quality controls should begin incrementally in early phases rather than be postponed to the hardening phase;
+- if cloud-connected GitHub Actions later becomes necessary, prefer OIDC with Workload Identity Federation when feasible and compliant with zero billing;
 - dbt must be central without hiding important native BigQuery concepts;
 - the project should follow a phase-based work model;
 - the repository should act as the durable source of truth between AI chats,
@@ -63,9 +66,12 @@ Still unresolved:
 - dimensional or alternative analytical model;
 - partition strategy;
 - clustering strategy;
-- dbt Core versus another dbt execution environment;
+- selection and compatibility verification of a free local dbt distribution (current dbt v2 / dbt OSS terminology);
 - materialization and incremental-model strategy;
 - Power BI semantic model and report structure;
+- free, reproducible Looker Studio companion data source (direct BigQuery connector requires billing);
+- whether the entire desired BigQuery/dbt design is compatible with Sandbox no-DML, cumulative lifetime storage, and 60-day expiry;
+- reproducible BI delivery without paid Power BI service sharing;
 - exact Terraform scope;
 - exact GitHub Actions / CI/CD workflow;
 - phase-specific acceptance criteria beyond the current high-level roadmap.
@@ -75,6 +81,8 @@ These must be resolved through Phase 0 or later authorized design decisions.
 ## Current authorization
 
 No implementation phase is authorized.
+
+The user explicitly authorized **documentation-level** updates to the roadmap, dual-BI plan, authentication requirements, and strict zero-charge controls. Those approvals are recorded in DECISIONS D-012 through D-015. They do **not** start Phase 0 and do **not** authorize enabling billing, subscribing to paid products, creating cloud infrastructure, or executing cloud work.
 
 When the user explicitly chooses to begin GridPulse, the authorized next work
 is **Phase 0 — Formal Project Design**.
@@ -99,3 +107,5 @@ When resuming GridPulse:
 ## Next handoff
 
 No phase handoff exists because no phase has been completed.
+
+The updated published planning documents are not phase completion evidence.
