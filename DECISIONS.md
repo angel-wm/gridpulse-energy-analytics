@@ -495,7 +495,7 @@ PROJECT_SPEC, ARCHITECTURE, and ROADMAP require a documented capacity estimate a
 
 ## D-018 — Retain free Looker Studio as a companion without cloud billing
 
-Status: **ACCEPTED**
+Status: **SUPERSEDED** by D-020 (scope/timing only)
 
 Supersedes: **D-016**
 
@@ -551,6 +551,58 @@ No billing account, budget, function, Pub/Sub topic, or cloud infrastructure is 
 
 ---
 
+## D-020 — Complete the Sandbox project first; make Looker Studio an optional final experiment
+
+Status: **ACCEPTED**
+
+Supersedes: **D-018** for timing and core-release scope; preserves its no-billing free-CSV approach.
+
+### Context
+
+The user wants GridPulse's core project completed first, including BigQuery Sandbox, dbt, engineering quality and Power BI. Looker Studio is useful additional experience but should not delay or block the project's main release.
+
+### Decision
+
+Define the **core deliverable** as Phases 0–8 ending with the tested Power BI report, documentation, reproducibility and portfolio release. Move the small Looker Studio dashboard to **optional Phase 9 — Post-release Looker Studio Experiment**, startable only after Phase 8 is closed and the user separately authorizes Phase 9. The project is complete at Phase 8 even if Phase 9 never starts. Phase 9 is not implicitly authorized on release.
+
+Within Phase 9, prefer the free, bounded CSV export/upload flow derived from dbt marts. Validate KPIs, freshness, append/deduplication and portability. The potential **direct** BigQuery connector on a billing-enabled project is a *separate optional experiment* discussed in D-019; it is not a prerequisite or automatically included in Phase 9.
+
+### Rationale
+
+Keeps the core deliverable focused and free while allowing additional BI experience later with independently bounded risk and effort.
+
+### Consequences
+
+ROADMAP adds explicitly optional Phase 9 outside the mandatory closure path. PROJECT_SPEC, ARCHITECTURE, CURRENT_STATE, README and AGENTS must not describe Looker Studio as a mandatory core report.
+
+---
+
+## D-021 — Prefer batch-first Sandbox-compatible transformations and document migration
+
+Status: **ACCEPTED**
+
+### Context
+
+BigQuery Sandbox does not support DML (including INSERT, UPDATE, DELETE and MERGE), but GridPulse has not selected a dataset. dbt transformations do not inherently require per-row DML: views and suitably supported table builds using DDL/CTAS can support a historical batch dataset. Incremental models with MERGE/INSERT_OVERWRITE usually require forbidden statements.
+
+### Decision
+
+For Phase 0 evaluate a **reproducible batch/historical source** as the simplest likely fit for the no-billing constraint; do not prejudge dataset selection or rule out time-series business questions. Test the actual dbt adapter/commands in Sandbox before asserting compatibility. Prefer views, ephemeral models and appropriate bounded full-build tables where validated; do not implement untested DML-based incremental models, snapshots, hooks or ingestion techniques dependent on DML.
+
+If an approved business requirement truly needs CDC, daily updates, late corrections, or incremental upsert, explicitly document that Sandbox does not provide the needed behavior. Evaluate a compliant alternative (for example, idempotent batch re-ingestion and a bounded full rebuild), a separate non-executed educational example, or deferral. Do not silently imply such workflows were tested.
+
+For future portability, maintain reproducible source acquisition, dataset and metric definitions, SQL/dbt code, model and test configuration, environment-specific profiles via examples with **no secrets**, warehouse object naming, schema/grain/lineage, bounded export specification, Power BI artifacts, and verified runbooks. Explain how to rebuild in a new authorized environment and record limitations from Sandbox's 60-day object expiry and non-refundable lifetime storage quota. This documentation is not authorization to upgrade, migrate or enable billing.
+
+### Rationale
+
+Achieves real end-to-end Analytics Engineering using the free environment while clearly exposing what cannot be simulated. Retaining portable assets means later experimentation will not depend on remembering undocumented steps.
+
+### Consequences
+
+ROADMAP Phase 0 includes a DML-requirement decision and core-release handoff portability checklist; PROJECT_SPEC and ARCHITECTURE explain batch-first constraints. Future paid experimentation requires separate authorization per D-013 and D-019.
+
+---
+
 ## Reference checks for Phase 0
 
 These are **external documentation references, not a claim that services were deployed**. Provider limits and terminology must be rechecked before execution:
@@ -561,6 +613,8 @@ These are **external documentation references, not a claim that services were de
 - Looker Studio connector: https://cloud.google.com/looker/docs/studio/connect-to-google-bigquery
 - GitHub OIDC: https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-google-cloud-platform
 - dbt distributions (September 2026): https://docs.getdbt.com/blog/comparing-dbt-and-dbt-oss
+- dbt BigQuery incremental strategies: https://docs.getdbt.com/reference/resource-configs/bigquery-configs
+- BigQuery SQL DDL for CTAS: https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language
 
 
 Additional official references for the deferred experiment:
