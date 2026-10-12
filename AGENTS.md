@@ -115,10 +115,14 @@ state.
 
 Do not introduce technologies merely for portfolio breadth.
 
-Power BI is the **only** planned BI report; Looker Studio was removed by
-accepted D-016, superseding D-012. The Power BI delivery path must be verified
-under the no-billing rule, using a reproducible bounded export/import where
-necessary. Choose a compatible local free dbt distribution using current
+Power BI is the **primary** report. Looker Studio is a **small, free
+CSV-fed companion** under D-018; D-016 is superseded. Validate free access,
+size limits, repeatable export and CSV append/deduplication behavior. Neither
+report may require a billing-enabled Google Cloud project. A hypothetical
+post-release direct Looker Studio-to-BigQuery connection is research only
+(D-019): not an approval to enable billing. Google Cloud billing alerts,
+functions that disable billing, and query quotas must not be misrepresented
+as a guarantee of zero charges. Choose a compatible local free dbt distribution using current
 release/adapter evidence, not stale terminology.
 
 The raw/staging/intermediate/marts architecture does not require materializing
