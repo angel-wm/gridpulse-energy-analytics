@@ -2,10 +2,10 @@
 
 GridPulse is a planned **Analytics Engineering + Business Intelligence** portfolio project for energy data.
 
-It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, a smaller Looker Studio companion, Terraform, and CI/CD** where justified and feasible at **USD 0 actual charges**.
+It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD** where justified and feasible at **USD 0 actual charges**.
 
 > **Current status:** PRE-PROJECT.  
-> No dataset, cloud resources, dbt project, data model, infrastructure, CI workflow, Power BI report, or Looker Studio report is implemented yet. **No billing activation or paid services are authorized.**
+> No dataset, cloud resources, dbt project, data model, infrastructure, CI workflow, or Power BI report is implemented yet. **No billing activation or paid services are authorized.**
 
 For authoritative project context and task-specific reading guidance, start with [REPO_CONTEXT.md](REPO_CONTEXT.md).
 
@@ -40,10 +40,7 @@ The current conceptual direction is:
             ↓
         dbt marts
             ↓
-    Power BI (primary)
-            +
-    Looker Studio (small companion,
-    free data access path to be verified)
+         Power BI
 
 Supporting concerns such as Terraform, GitHub Actions, security, cost control, and data quality apply across the flow.
 
@@ -57,8 +54,7 @@ The exact design remains subject to Phase 0 approval.
 | SQL / GoogleSQL | Core transformation and analytical language |
 | dbt | Modular transformations, tests, documentation, lineage, and marts; select a compatible free local distribution before implementation |
 | Python | Ingestion or utilities when SQL/dbt are not the natural tool |
-| Power BI / DAX | Primary business-facing semantic and reporting layer; prefer Desktop/Import and assess PBIP versioning |
-| Looker Studio (Data Studio) | Compact complementary report using a verified no-charge source; direct BigQuery connection may require billing |
+| Power BI / DAX | Sole business-facing semantic and reporting layer; prefer Desktop/Import and assess PBIP versioning |
 | Terraform | Reproducible cloud infrastructure where justified |
 | GitHub Actions | Safe CI/CD and automated validation where justified |
 | Git / GitHub | Version control, review, publication, and project handoff |
@@ -78,10 +74,9 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 | dbt project | Not implemented |
 | Terraform / CI/CD | Not implemented; safe CI checks are planned early |
 | Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
-| Looker Studio | Not implemented; free connection method is an open design question |
 | Power BI | Not implemented |
 
-Implementation must not begin until Phase 0 is explicitly authorized. The approved documentation changes are **not** approval to start a phase, enable billing, create cloud resources, or incur charges. BigQuery Sandbox is the initial no-billing feasibility candidate, with important feature restrictions and 60-day object expiration; see [PROJECT_SPEC.md](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate).
+Implementation must not begin until Phase 0 is explicitly authorized. The approved documentation changes are **not** approval to start a phase, enable billing, create cloud resources, or incur charges. BigQuery Sandbox is the initial no-billing feasibility candidate, with important feature restrictions, a non-replenishing lifetime storage cap, and 60-day object expiration. Storage and model materializations will be designed after choosing the dataset; see [PROJECT_SPEC.md](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate).
 
 For the authoritative state, read [CURRENT_STATE.md](CURRENT_STATE.md).
 
