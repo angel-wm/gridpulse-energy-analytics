@@ -10,7 +10,7 @@ Phase 0 must refine and approve this architecture before implementation.
 
 ## Architecture at a glance
 
-GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI as the sole BI deliverable.
+GridPulse is intended to move energy data from source systems into a cloud analytical warehouse, transform it through dbt, and expose curated models to Power BI as the primary BI deliverable and a small Looker Studio companion through a free curated export.
 
     Energy source data
             ↓
@@ -24,9 +24,12 @@ GridPulse is intended to move energy data from source systems into a cloud analy
             ↓
         dbt marts
             ↓
-         Power BI
-    (via a verified no-billing
-     data path, if needed)
+    Curated results
+            ↓
+    Bounded export/import
+          ↙   ↘
+      Power BI  Looker Studio
+       main      companion
 
 Cross-cutting concerns:
 
@@ -163,12 +166,19 @@ The report design remains unresolved until business questions and marts are appr
 
 ### Business Intelligence delivery and portability
 
-Power BI is the **only planned BI report**. It should deliver the semantic/DAX
+Power BI is the **primary BI report** and should deliver the semantic/DAX
 and interactive reporting layer. Prefer Power BI Desktop with Import when
 appropriate and assess text-based PBIP for source control. Do not depend
 on paid Power BI sharing or an unverified billing-dependent direct BigQuery
 connection. During Phase 0, validate a genuinely no-billing connection or a
 small, reproducible export/import workflow from curated results.
+
+Looker Studio (Data Studio) is a **small companion** reporting on the same
+approved KPI definitions, through a repeatable bounded CSV export and the
+free CSV upload source, subject to access and size validation. Since uploads
+append rather than replace records, document a deduplicated refresh path.
+Direct Looker Studio-to-BigQuery is *not* part of the core architecture; it is
+only a candidate for a separate, explicitly authorized post-release experiment.
 
 ## Cross-cutting engineering concerns
 
@@ -234,6 +244,19 @@ query scans. Persist compact marts only where justified, avoid ornamental
 intermediate tables, and consider partitioning/clustering on the measured
 workload. Incremental strategies requiring DML may be unavailable in Sandbox.
 Document the chosen rationale and validate it later against real metrics.
+
+#### Optional post-release cost-control study — not an implementation requirement
+
+Do not enable billing during core GridPulse work. If direct BigQuery-to-Looker
+Studio is revisited after the release, first document separate approval,
+uncapped-charge risks, and available safety layers: conservative BigQuery
+custom daily query usage quotas; query-by-query `maximum_bytes_billed` and
+dry runs; billing alerts; and Google's programmatic Pub/Sub -> Cloud Run
+function -> billing deactivation pattern. Monetary notifications can be
+delayed, custom query quotas are approximate and apply only to on-demand
+queries, and even automatic billing shutdown cannot guarantee USD 0 costs.
+Spend-cap budgets currently do not list BigQuery among eligible services.
+Do not deploy any of these billed-project components without specific approval.
 
 ### Infrastructure as Code
 
@@ -314,7 +337,7 @@ This tree is illustrative, not an instruction to create these folders now.
 - Preserve source-to-metric traceability.
 - Keep reusable transformation logic upstream of visualization when practical.
 - Treat dbt intermediate models as optional: add them only to centralize genuine reusable work, not as a mandatory hop.
-- Preserve approved KPI definitions between BigQuery/dbt marts and the Power BI semantic layer, without duplicating business rules.
+- Preserve approved KPI definitions between BigQuery/dbt marts, Power BI, and the smaller Looker Studio report, without duplicating business rules.
 - Make important assumptions explicit.
 - Validate important transformations and reconciliations.
 - Optimize from evidence, not portfolio decoration.
