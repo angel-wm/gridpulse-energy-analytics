@@ -115,21 +115,27 @@ state.
 
 Do not introduce technologies merely for portfolio breadth.
 
-Power BI is the **primary** report. Looker Studio is a **small, free
-CSV-fed companion** under D-018; D-016 is superseded. Validate free access,
-size limits, repeatable export and CSV append/deduplication behavior. Neither
-report may require a billing-enabled Google Cloud project. A hypothetical
-post-release direct Looker Studio-to-BigQuery connection is research only
-(D-019): not an approval to enable billing. Google Cloud billing alerts,
-functions that disable billing, and query quotas must not be misrepresented
-as a guarantee of zero charges. Choose a compatible local free dbt distribution using current
+**Core project delivery ends at Phase 8 with Power BI.** Looker Studio is
+an **optional, separately authorized Phase 9 after release** (D-020), not a
+condition of the main project's completion. For that optional experiment,
+prefer bounded reproducible curated CSV exports and verify free access, size
+limits, and CSV append/deduplication behavior. A hypothetical direct Looker
+Studio-to-BigQuery connection is another future research option (D-019),
+**not** authorization to enable billing. Billing alerts, automatic billing
+shutdown and query quotas are not guarantees of zero charges. Choose a compatible local free dbt distribution using current
 release/adapter evidence, not stale terminology.
 
 The raw/staging/intermediate/marts architecture does not require materializing
 every layer as a table. After dataset selection, estimate cumulative **lifetime**
 Sandbox storage and justify views, dbt ephemeral models and only necessary
 persisted marts against query-scan cost, performance, and reproducibility.
-Do not prematurely assume DML-based incremental models work in Sandbox.
+Sandbox does **not** support INSERT, UPDATE, DELETE or MERGE DML. Evaluate
+whether the approved dataset actually needs those operations; prefer a
+verified batch/historical path with dbt views and supported table creation
+where appropriate. Do not claim untested dbt materializations, incremental
+strategies or snapshot runs are supported. Preserve documented sources,
+non-secret config, dbt code/tests, BI artifacts, reproducible reload/exports
+and migration limitations (D-021).
 
 If a proposed technology is not part of the approved architecture:
 
