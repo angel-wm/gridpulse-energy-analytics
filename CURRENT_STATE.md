@@ -35,7 +35,7 @@ The following project direction has been approved at a conceptual level:
 - primary transformation framework: dbt;
 - SQL is the primary transformation language;
 - Python may support ingestion or utilities when justified;
-- primary BI reporting layer: Power BI (Desktop/Import-first where appropriate, with PBIP considered for reproducibility), plus a small Looker Studio report using a free curated CSV import;
+- **core BI layer**: Power BI (Desktop/Import-first where appropriate, with PBIP considered for reproducibility); a small free-CSV Looker Studio dashboard is an **optional separately authorized Phase 9 after the Phase 8 core release**, not a core deliverable;
 - Terraform and GitHub Actions should be used where technically justified;
 - the GridPulse cost constraint is now strict USD 0 actual charges, with an unbilled BigQuery Sandbox-first design; no billing activation or paid cloud services are authorized;
 - safe CI and data-quality controls should begin incrementally in early phases rather than be postponed to the hardening phase;
@@ -68,10 +68,12 @@ Still unresolved:
 - clustering strategy;
 - selection and compatibility verification of a free local dbt distribution (current dbt v2 / dbt OSS terminology);
 - materialization and incremental-model strategy;
+- whether selected data truly requires UPDATE/MERGE, late corrections, CDC, or periodic incremental processing; batch-first compatibility must be validated;
 - Power BI semantic model and report structure;
 - whether the entire desired BigQuery/dbt design is compatible with Sandbox no-DML, cumulative lifetime storage, and 60-day expiry;
 - reproducible Power BI delivery without paid service sharing or mandatory GCP billing;
-- validation of Looker Studio free CSV upload/refresh and bounded export size;
+- optional Phase 9 validation of Looker Studio free CSV upload/refresh and bounded export size (not required before core Phase 8 closure);
+- core-rebuild portability package: source acquisition, dbt code and tests, environment examples, export specifications, Power BI project, evidence and migration notes;
 - dataset-dependent capacity estimate for cumulative Sandbox storage, duplicated layers, model materializations and rebuilds;
 - exact Terraform scope;
 - exact GitHub Actions / CI/CD workflow;
@@ -83,7 +85,7 @@ These must be resolved through Phase 0 or later authorized design decisions.
 
 No implementation phase is authorized.
 
-The user explicitly authorized **documentation-level** updates to the roadmap, authentication requirements, strict zero-charge controls and BI scope. Decision D-018 supersedes D-016 (which had superseded D-012): Looker Studio is restored as a compact free CSV-fed companion to the primary Power BI report. Decision D-017 defers selection of storage/materialization optimizations until the dataset is chosen and sized. D-019 records a possible future direct billing-enabled BI connection for study only, with no authorization to enable billing or accept financial charges. These approvals do **not** start Phase 0 and do **not** authorize enabling billing, subscribing to paid products, creating cloud infrastructure, or executing cloud work.
+The user explicitly authorized **documentation-level** updates to the roadmap, authentication requirements, strict zero-charge controls and BI scope. Decision D-020 supersedes the **scope/timing** of D-018: the complete **core project finishes in Phase 8 with Power BI**, and Looker Studio is an **optional Phase 9 experiment after release**, only with new explicit authorization. D-018's no-billing CSV method remains the preferred optional path. D-021 prefers evaluating batch-first, no-DML transformations and explicitly documents future reproducibility/migration; whether UPDATE/MERGE would be needed depends on the dataset. D-017 defers storage/materialization choices until dataset sizing. D-019 records a possible future direct billing-enabled BI connection for study only, with **no** authorization to enable billing or accept charges. These approvals do **not** start Phase 0 and do **not** authorize enabling billing, subscribing to paid products, creating cloud infrastructure, or executing cloud work.
 
 When the user explicitly chooses to begin GridPulse, the authorized next work
 is **Phase 0 — Formal Project Design**.
