@@ -51,7 +51,7 @@ Material scope or architecture changes must be recorded in DECISIONS.md before t
 | 3 | BigQuery Native Analytics and dbt Foundation | Native BigQuery practice, verified free local dbt distribution, sources/staging, initial tests, and safe dbt CI checks | Phase 2 closed |
 | 4 | Analytical Modeling | Justified staging/intermediate/marts, dimension or equivalent models, tested metrics, and ongoing CI validation | Phase 3 closed |
 | 5 | Data Quality, Documentation and Performance | Deeper tests, reconciliation, dbt docs/lineage, cost review, and evidence-based optimization | Phase 4 closed |
-| 6 | Business Intelligence: Power BI + Looker Studio | Full primary Power BI report, compact complementary Looker Studio report, aligned KPIs, and documented insights without new charges | Phase 5 closed |
+| 6 | Power BI Analytics | Complete Power BI report with tested KPIs and documented insights using a verified no-billing data delivery path | Phase 5 closed |
 | 7 | CI/CD and Infrastructure Hardening | Harden existing safe automation, Terraform scope, least-privilege identity, and environment/security practices | Phase 6 closed |
 | 8 | Final Validation and Portfolio Release | Reproducible end-to-end release with complete portfolio documentation, evidence, and verified zero spend | Phase 7 closed |
 
@@ -67,12 +67,13 @@ Phase 0 defines what GridPulse will actually build. It is a design phase, not an
 - establish source and analytical grain;
 - decide the ingestion approach;
 - establish a no-billing, USD 0 cost plan; verify BigQuery Sandbox lifetime storage, monthly query allowance, automatic expiry, and feature limitations;
-- identify free alternatives or deferrals for features that require a billing account (including direct Looker Studio-to-BigQuery connection);
+- after choosing the source, estimate cumulative raw/model/intermediate storage, repeated loads and headroom; compare suitable materializations (views, ephemeral, compact tables) against bytes scanned, performance and correctness;
+- identify free alternatives or deferrals for any features or BI integrations that require a billing account;
 - design BigQuery layer responsibilities;
 - define which BigQuery concepts must be learned natively;
 - define dbt layer responsibilities;
 - propose the analytical/dimensional model;
-- define Power BI as the primary BI deliverable and a smaller complementary Looker Studio deliverable, with validated no-charge data access for both;
+- define Power BI as the sole BI deliverable, with a verified no-billing data-transfer or connector strategy (including a reproducible bounded export/import option);
 - assess Power BI Desktop/Import and text-based PBIP versioning, without assuming paid sharing features;
 - establish cost controls;
 - identify Terraform scope;
@@ -94,6 +95,7 @@ Phase 0 should produce, at minimum:
 - recorded major tooling decisions;
 - reviewed roadmap;
 - explicit no-billing / zero-spend feasibility decision, alternatives for unsupported features, and least-privilege security constraints;
+- initial dataset-dependent warehouse capacity estimate and justified materialization strategy, subject to later empirical checks;
 - Phase 0 validation criteria and record;
 - Phase 0 handoff;
 - updated CURRENT_STATE.
@@ -106,6 +108,7 @@ Phase 0 cannot close until:
 - ARCHITECTURE reflects an approved intended design;
 - dataset/source and business problem are confirmed;
 - USD 0 operating plan is feasible without enabling billing, or blockers and deferred capabilities are explicitly documented;
+- estimated Sandbox lifetime storage consumption and key duplication tradeoffs are reviewed;
 - key architecture/tool decisions are recorded;
 - later roadmap phases have been reviewed and corrected where required;
 - Phase 0 validation supports closure;
