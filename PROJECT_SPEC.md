@@ -23,7 +23,7 @@ The project should demonstrate how raw analytical data can be:
 5. validated through automated data-quality checks;
 6. optimized for analytical workloads and cost;
 7. exposed through business-ready marts;
-8. consumed through a single business-facing Power BI deliverable;
+8. consumed through Power BI as the primary deliverable and a small supplementary Looker Studio report using a free data path;
 9. supported by reproducible infrastructure and CI/CD where justified.
 
 The project must resemble a realistic professional data platform, not a
@@ -40,7 +40,7 @@ demonstrating:
 - cloud analytical warehousing;
 - dimensional / analytical modeling;
 - data quality;
-- Power BI consumption of curated warehouse models;
+- Power BI consumption of curated warehouse models, and a deliberately small Looker Studio companion on consistent KPIs;
 - Terraform and CI/CD where they naturally support the platform.
 
 Other portfolio projects are intended to cover Spark/Databricks, Snowflake,
@@ -172,6 +172,24 @@ Prefer Power BI Desktop and Import initially where compatible with dataset size
 and refresh needs. Assess text-based Power BI Project (PBIP) for version control.
 Do not make Pro/PPU paid sharing a project completion requirement.
 
+### Looker Studio (Data Studio) — free companion
+
+Looker Studio is a **secondary, compact report**, not another enterprise BI
+platform. The default no-charge data path is a **bounded reproducible CSV
+export** of curated BigQuery/dbt results and the documented free Looker Studio
+CSV-file upload connector. Google Sheets may be assessed if equally free and
+appropriate for this dataset. The direct BigQuery connector requires a Google
+Cloud billing account and is **out of scope for initial implementation**.
+
+Verify Looker Studio CSV feature access, quota/size restrictions, and the
+append-on-upload behavior (avoid double-counting when refreshing). Reuse
+approved KPIs and document dataset freshness. No paid Looker/Looker Studio Pro
+subscription or BigQuery billing activation is necessary for this deliverable.
+
+An optional *post-release* direct BigQuery integration is recorded in D-019
+for research only; it requires a new explicit approval and acceptance of
+residual billing risk.
+
 ### Terraform
 
 Infrastructure as Code for reproducible cloud infrastructure where technically
@@ -238,7 +256,8 @@ The completed project should provide:
 - automated data-quality checks;
 - reconciliation between important layers;
 - documented KPIs and metric definitions;
-- primary and sole Power BI report/dashboard, reproducible without paid sharing or a required Google Cloud billing account;
+- primary Power BI report/dashboard, reproducible without paid sharing or a required Google Cloud billing account;
+- compact Looker Studio report using a validated free CSV or equivalent data source, aligned to a subset of approved metrics;
 - reproducible setup instructions;
 - technical documentation;
 - phase-based validation evidence.
@@ -284,7 +303,7 @@ generate charges. Staying below these two limits alone does **not** guarantee
 zero billing across Google Cloud.
 
 Phase 0 must demonstrate that the chosen dataset, raw/staging/marts footprint,
-refresh/rebuild approach, dbt materializations, CI execution, the sole Power BI
+refresh/rebuild approach, dbt materializations, CI execution, Power BI and the compact Looker Studio
 report, and any proposed Terraform/IAM resources can work with no billing
 account. Do not assume a live BigQuery-to-Power BI connector works without
 billing; evaluate a documented, reproducible bounded export/Import workflow
@@ -298,6 +317,16 @@ and query quotas. These are **defense-in-depth controls**, not permission to
 activate billing. Alerts and budgets do not by themselves prove a USD 0 cap.
 Any change to this strict constraint requires a separate explicit user
 decision; simply authorizing project work is insufficient.
+
+**Future option only:** A post-release direct Looker Studio-to-BigQuery
+connection might require billing. The user has not approved enabling it. Cloud
+Billing budgets/alerts and the official Pub/Sub + Cloud Run function billing
+shutoff example are delayed, reactive safeguards and do NOT guarantee zero
+charges. Query dry runs, maximum bytes billed and approximate custom daily
+on-demand query quotas are useful proactive safeguards but do not cover all
+costs. Native spend-cap budgets currently list specific services, not BigQuery.
+A separate risk assessment and explicit authorization would be prerequisites.
+See D-019.
 
 Primary references:
 https://docs.cloud.google.com/bigquery/docs/sandbox
@@ -352,6 +381,7 @@ GridPulse should provide meaningful, hands-on practice with:
 - dimensional modeling;
 - data quality and reconciliation;
 - Power BI;
+- Looker Studio reporting through a free import-based data source;
 - DAX;
 - Terraform;
 - GitHub Actions / CI/CD.
@@ -411,6 +441,7 @@ GridPulse is successful when:
 - architecture and decisions are documented;
 - BigQuery/dbt behavior is demonstrably understood rather than hidden;
 - Power BI answers the approved business questions;
+- Looker Studio provides a compact report for aligned approved KPIs without requiring cloud billing;
 - Power BI delivery has an evidenced free data path, or a blocker is explicitly documented without enabling billing;
 - actual cloud/service charges for the project remain USD 0;
 - infrastructure and automation are reproducible where included;
@@ -443,6 +474,7 @@ Phase 0 must resolve at least:
 - What GitHub Actions workflows are safe and useful?
 - How will Power BI connect to the curated layer and how will PBIP/Import be validated without paid licensing?
 - Can Power BI consume BigQuery outputs without a GCP billing account, potentially via a reproducible bounded export and Power BI Desktop Import?
+- Is free Looker Studio CSV upload available with the needed data limits and can refresh be repeatable without duplicate appends?
 - Which local free dbt distribution and version work with the adapter and Sandbox constraints?
 - How will Sandbox 60-day expiry and non-DML restrictions be handled and documented?
 - Can OIDC/Workload Identity Federation be configured in the zero-billing environment, or must cloud CI be deferred?
