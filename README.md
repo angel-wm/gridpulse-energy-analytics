@@ -120,3 +120,8 @@ Repository documentation presentation follows the locally installed Repository D
         └── repository-documentation-readability/
 
 That guidance affects presentation only. GridPulse's own project semantics, authority rules, architecture, and lifecycle always take precedence.
+
+## License
+
+GridPulse's original code and documentation are available under the [MIT License](LICENSE).
+Third-party datasets and materials remain subject to their own licenses and terms.
