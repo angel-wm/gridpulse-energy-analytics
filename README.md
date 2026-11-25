@@ -4,8 +4,9 @@ GridPulse is a planned **Analytics Engineering + Business Intelligence** portfol
 
 It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD; with an optional later Looker Studio experiment** where justified and feasible at **USD 0 actual charges**.
 
-> **Current status:** PRE-PROJECT.  
-> No dataset, cloud resources, dbt project, data model, infrastructure, CI workflow, Power BI report, or Looker Studio report is implemented yet. **No billing activation or paid services are authorized.**
+> **Current status:** Phase 0 design complete. Phase 1 is planned.
+>
+> The design uses EIA-930 for ERCO (Texas), 2023–2025. The project requires **USD 0 actual charges**.
 
 For authoritative project context and task-specific reading guidance, start with [REPO_CONTEXT.md](REPO_CONTEXT.md).
 
@@ -49,7 +50,8 @@ The current conceptual direction is:
 
 Supporting concerns such as Terraform, GitHub Actions, security, cost control, and data quality apply across the flow.
 
-The exact design remains subject to Phase 0 approval.
+See the [Phase 0 design baseline](docs/phase-0-design-baseline.md) for
+the initial model and release scope.
 
 ## Planned technology roles
 
@@ -65,17 +67,20 @@ The exact design remains subject to Phase 0 approval.
 | GitHub Actions | Safe CI/CD and automated validation where justified |
 | Git / GitHub | Version control, review, publication, and project handoff |
 
+Docker is optional and has not been selected; see the [reproducibility tradeoff](PROJECT_SPEC.md#explicit-non-goals).
+
 Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not part of the planned core architecture unless a future approved decision establishes a real need.
 
 ## Current state
 
 | Item | State |
 | --- | --- |
-| Project | PRE-PROJECT |
+| Project | Design complete |
 | Current phase | None |
-| Next planned phase | Phase 0 — Formal Project Design |
-| Dataset | Not selected |
-| Architecture | Intended only; not approved for implementation |
+| Last closed phase | Phase 0 — Formal Project Design |
+| Next planned phase | Phase 1 — Repository and Cloud Foundation |
+| Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
+| Architecture | Design baseline with runtime verification gates |
 | BigQuery resources | Not implemented |
 | dbt project | Not implemented |
 | Terraform / CI/CD | Not implemented; safe CI checks are planned early |
@@ -83,7 +88,11 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 | Power BI | Not implemented |
 | Looker Studio | Optional Phase 9, not begun; not required for core completion |
 
-Implementation must not begin until Phase 0 is explicitly authorized. The approved documentation changes are **not** approval to start a phase, enable billing, create cloud resources, or incur charges. BigQuery Sandbox is the initial no-billing feasibility candidate, with important feature restrictions, a non-replenishing lifetime storage cap, and 60-day object expiration. Storage and model materializations will be designed after choosing the dataset. Batch-first dbt views/appropriate tables may avoid Sandbox-blocked UPDATE/MERGE; this needs validation after dataset selection. Record complete reproducibility and future migration/rebuild steps before release. Any optional future billed BigQuery connector experiment requires separate approval and cannot guarantee zero charges; see [PROJECT_SPEC.md](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate).
+The [Phase 0 handoff](docs/handoffs/phase-0-to-1.md) records the local
+validation and the remaining runtime checks for BigQuery Sandbox, dbt,
+and Power BI. See the
+[strict zero-billing gate](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate)
+and [phase rules](ROADMAP.md#phase-rules).
 
 For the authoritative state, read [CURRENT_STATE.md](CURRENT_STATE.md).
 
@@ -106,6 +115,11 @@ Use the document that matches your question:
 GridPulse uses the [AI Repository Context](REPO_CONTEXT.md) convention for cross-chat and cross-tool continuity.
 
 The repository, not chat memory, is the durable source of truth.
+
+The [GridPulse Jira project](https://angel231995.atlassian.net/browse/GRID)
+tracks planned phase epics and tasks. The repository remains authoritative for
+scope, decisions, phase state, authorization, and evidence. A Jira issue or
+status does not start or close a phase; follow the [roadmap rules](ROADMAP.md#phase-rules).
 
 Phase handoffs and validation evidence live under:
 

@@ -2,11 +2,13 @@
 
 ## Status
 
-Architecture status: **INTENDED / NOT IMPLEMENTED**
+Architecture status: **DESIGN BASELINE / NOT IMPLEMENTED**
 
 This document explains the current architectural direction. It does not prove that infrastructure, datasets, tables, pipelines, dbt models, Terraform resources, CI workflows, or dashboards exist.
 
-Phase 0 must refine and approve this architecture before implementation.
+The [Phase 0 design baseline](docs/phase-0-design-baseline.md) defines the
+warehouse, report, and no-billing workflow. The
+[handoff](docs/handoffs/phase-0-to-1.md) lists the runtime verification gates.
 
 ## Architecture at a glance
 
@@ -64,17 +66,16 @@ dbt should improve maintainability without making BigQuery behavior opaque.
 
 ### Source
 
-The source layer represents the original energy-domain data and any approved contextual sources.
+The primary source is the six EIA-930 Balance CSV files for 2023–2025. The
+initial report uses ERCO (Texas), as recorded in
+[D-023](DECISIONS.md#d-023--analyze-erco-demand-and-forecast-accuracy-for-20232025).
 
-Phase 0 must resolve:
+Use the [design baseline](docs/phase-0-design-baseline.md#source-selection) for:
 
-- exact source;
-- acquisition method;
-- licensing or usage constraints;
-- source grain;
-- update cadence;
-- expected volume;
-- supplementary sources.
+- reproducible download and source revision handling;
+- exact fields and validation rules;
+- expected load volume;
+- whether any supplementary data is justified.
 
 Source data must remain reproducible or reacquirable.
 
@@ -82,14 +83,13 @@ Source data must remain reproducible or reacquirable.
 
 This layer moves source data into the analytical platform while preserving traceability.
 
-Possible implementations include:
-
-- BigQuery-native loading;
-- Python;
-- Cloud Storage as a landing layer;
-- API or file acquisition.
-
-The selected source should determine the ingestion design. Do not force Python or additional GCP services without a reason.
+Prepare the batch locally by keeping ERCO rows and selecting the common
+columns needed for the report. Load the batch into one source-aligned BigQuery
+raw table with one row per balancing authority and UTC hour ending. Keep the
+source file references and checksums for reproducibility. The
+[pilot tooling plan](docs/phase-0-pilot-tooling.md) describes the preparation,
+load, and native SQL checks. See
+[D-024](DECISIONS.md#d-024--prepare-a-bounded-eia-930-batch-locally-for-bigquery).
 
 Important concerns include reproducibility, idempotency where useful, source/load counts, failure visibility, and load metadata when valuable.
 
@@ -105,7 +105,8 @@ The raw layer should:
 
 Raw data should not silently discard analytically unusual but technically valid records.
 
-Phase 0 or early implementation must define dataset/table naming, loading strategy, schema approach, ingestion metadata, and cost controls.
+Use the baseline naming, schema, and lineage design. Verify the actual
+dataset location and storage controls in the later authorized phases.
 
 ### Native BigQuery learning
 
@@ -153,9 +154,9 @@ Marts should:
 - support Power BI efficiently;
 - provide stable analytical contracts.
 
-The final model may use a star schema or another justified analytical pattern.
-
-Phase 0 must define fact grain, dimensions, keys, slowly changing behavior if relevant, metric ownership, and expected Power BI consumption.
+The initial model uses one [hourly fact view and a reporting-date
+dimension](docs/phase-0-design-baseline.md#warehouse-and-report-model).
+It keeps the raw UTC key through staging and export.
 
 ### Power BI
 
@@ -163,16 +164,16 @@ Power BI should consume curated analytical models and provide stakeholder-facing
 
 Reusable transformation logic should remain upstream when practical instead of being duplicated in DAX.
 
-The report design remains unresolved until business questions and marts are approved.
+The [report scope and CSV contract](docs/phase-0-design-baseline.md#power-bi-delivery)
+define the first release. Report authoring belongs to Phase 6.
 
 ### Business Intelligence delivery and portability
 
 Power BI is the **primary BI report** and should deliver the semantic/DAX
 and interactive reporting layer. Prefer Power BI Desktop with Import when
-appropriate and assess text-based PBIP for source control. Do not depend
-on paid Power BI sharing or an unverified billing-dependent direct BigQuery
-connection. During Phase 0, validate a genuinely no-billing connection or a
-small, reproducible export/import workflow from curated results.
+appropriate and assess text-based PBIP for source control. The route uses
+a bounded warehouse CSV. The [handoff](docs/handoffs/phase-0-to-1.md)
+assigns its runtime validation to the authorized implementation phases.
 
 Looker Studio (Data Studio) is a **small optional Phase 9 experiment after the
 core project is released**, reporting on the same
@@ -235,6 +236,38 @@ BigQuery decisions should consider:
 - explicitly documented fallback when feature/billing prerequisites conflict with USD 0.
 
 Optimization should be evidence-based.
+
+#### Proposed one-month Sandbox pilot
+
+Use ERCO reporting dates in March 2025. The local baseline has 743 hourly
+rows, including a 23-hour reporting date on March 9. The reporting-date
+filter preserves the final March hour, which ends on April 1 in UTC.
+
+1. Verify that the pilot project is an unbilled Sandbox before execution.
+2. Load the bounded CSV into one raw table. Use native BigQuery SQL to check
+   the schema, counts, key uniqueness, and timestamp boundaries.
+3. Build the candidate dbt view and run data tests. Reconcile demand peak,
+   paired-hour count, MAE, and bias with the
+   [local baseline](docs/validation/phase-0-eia930.md).
+4. Export a bounded, flat query result as a CSV and import it into Power BI
+   Desktop. Confirm that date and number types, row counts, and KPI values
+   agree with the warehouse result.
+5. Record storage used, bytes scanned, the rebuild steps, and any limitations.
+   If an operation requires billing, stop that operation and record the
+   supported alternative or deferral for review.
+
+March has complete measurements in the input files. Verify the behavior
+for missing demand or forecast separately using the full-history local
+baseline and a bounded test case before accepting the model.
+
+For initial sizing, 128 logical bytes per projected row gives about
+3.2 MiB for 26,304 rows and 0.1 MiB for the pilot raw input. As a planning
+scenario, budget 4 MiB per full raw load and another 4 MiB for a persisted
+mart of comparable size if justified. Ten full rebuilds at that allowance
+plus 1 MiB for the pilot would consume about 81 MiB of lifetime storage.
+This is an estimate to validate with actual object sizes. Start by evaluating
+views for staging and the hourly model so the pilot can compare bytes scanned
+and persisted storage before adding another table.
 
 #### Dataset-dependent materialization and storage strategy
 

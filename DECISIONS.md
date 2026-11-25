@@ -603,6 +603,156 @@ ROADMAP Phase 0 includes a DML-requirement decision and core-release handoff por
 
 ---
 
+## D-022 — Use EIA-930 as the primary energy data source
+
+Status: **ACCEPTED**
+
+### Context
+
+GridPulse needs real energy data that readers can obtain and reuse for a
+reproducible portfolio project. The screening compared EIA-930 with UCI's
+household consumption dataset and Open Power System Data's European time series.
+
+### Decision
+
+Use the [U.S. Energy Information Administration's EIA-930 Balance files](https://www.eia.gov/electricity/930-content/about.html)
+as the primary source. Follow the [EIA reuse policy](https://www.eia.gov/about/copyrights_reuse.php)
+and acknowledge the source and publication date when presenting or redistributing
+its data. The project MIT license covers GridPulse's original work.
+
+### Rationale
+
+The public CSV files can be downloaded without an API key. They include hourly
+demand, day-ahead forecasts, and net generation across multiple balancing
+authorities. Local screening of the [January–June](https://www.eia.gov/electricity/gridmonitor/sixMonthFiles/EIA930_BALANCE_2024_Jan_Jun.csv)
+and [July–December](https://www.eia.gov/electricity/gridmonitor/sixMonthFiles/EIA930_BALANCE_2024_Jul_Dec.csv)
+2024 files found 8,784 consecutive hours for ERCO, with no duplicate UTC hours
+or missing values in those three measures.
+The two files use different generation-by-fuel columns, so comparisons by fuel
+would require a mapping across file schemas.
+
+### Consequences
+
+Use ERCO in 2024 as the proposed starting scope for Phase 0. Confirm the period,
+authorities, fields, missing-data rules, and reproducible batch workflow during
+design. Cloud feasibility and the phase start require their own checks and
+authorization under the roadmap. This source decision leaves the design approach
+in D-017 and D-021 in effect.
+
+---
+
+## D-023 — Analyze ERCO demand and forecast accuracy for 2023–2025
+
+Status: **ACCEPTED**
+
+Replaces the proposed 2024-only starting scope in D-022. EIA-930 remains the
+primary source.
+
+### Context
+
+The six EIA-930 Balance CSV files for 2023–2025 share the hourly demand,
+day-ahead forecast, and total net generation fields. Local screening found
+26,304 consecutive ERCO hours with unique UTC keys across the three
+reporting years. Demand, forecast, and net generation each have 48 missing
+values in 2025 and none in 2023 or 2024. Generation-by-source columns
+change between the two 2024 files.
+
+### Decision
+
+- Use ERCO (Texas) for reporting years 2023–2025. Focus the first report on
+  demand peaks and the accuracy of the day-ahead forecast.
+- Design a one-month Sandbox pilot with no linked billing before loading the
+  full history. In the authorized validation work, use the pilot to check
+  the load, dbt execution, and the CSV handoff to Power BI Desktop.
+- Include reproducible source checks in the Phase 0 closeout. Record the input
+  files, expected unique hourly keys, and missing-value counts so later
+  phases can reconcile their results against the same baseline.
+
+### Rationale
+
+Three reporting years support seasonal and cross-year comparisons on a
+consistent set of measures. The pilot isolates compatibility problems while
+keeping the volume bounded. Reproducible checks give later phases concrete
+expected results.
+
+### Consequences
+
+Phase 0 will settle the ingestion approach, final KPI definitions, missing-data
+rules, and acceptance criteria. Treat comparisons with other balancing
+authorities and generation by source as possible extensions. The phase start
+and any cloud work follow the authorization rules in ROADMAP.
+
+---
+
+## D-024 — Prepare a bounded EIA-930 batch locally for BigQuery
+
+Status: **ACCEPTED**
+
+### Context
+
+The six EIA-930 Balance files for 2023–2025 use two schemas. The fields needed
+for the demand and forecast analysis in D-023 are present in both.
+
+### Decision
+
+Filter the six CSV files locally to ERCO and select the common fields needed
+for the initial report. Load the resulting batch into one source-aligned
+BigQuery raw table, with one row per balancing authority and UTC hour ending.
+Preserve reported values and missing measurements in the input. Use BigQuery
+SQL for initial inspection and reconciliation, then dbt for analytical
+transformations and tests.
+
+### Rationale
+
+The report can use a single input schema across all three years. A bounded
+batch limits Sandbox storage and keeps the warehouse work focused on the data
+quality and modeling needs of the report.
+
+### Consequences
+
+Record the source URLs, checksums, and row counts so the batch can be rebuilt.
+Phase 0 will define the exact columns, file format, and validation rules. The
+pilot in D-023 will test the selected tooling during authorized work.
+
+---
+
+## D-025 — Adopt the ERCO design baseline with runtime gates
+
+Status: **ACCEPTED**
+
+### Context
+
+D-023 and D-024 established the historical scope and local projection.
+Phase 0 verified the source, the March pilot fixture, metric behavior in
+local SQL, and startup of the pinned dbt CLI. There is no verified unbilled
+Sandbox project or adapter session for the live pilot.
+
+### Decision
+
+Use one raw table, a staging view, and an hourly fact view. Keep the date
+dimension in Power BI and use a bounded CSV export and Desktop Import.
+Use the free local dbt v2.0.13 distribution for the pilot. Record the USD 0
+route as feasible in design and keep runtime verification as an
+implementation gate. Apply the Roadmap exit criterion that permits explicit
+deferral of unverified capabilities.
+
+### Rationale
+
+The historical batch serves the report without row-level updates. Views
+limit duplicated storage and the hourly grain supports the KPIs with
+transparent coverage. The local tool check and provider documentation
+support a bounded pilot with no paid dependencies.
+
+### Consequences
+
+Use the [design baseline](docs/phase-0-design-baseline.md). Verify Sandbox
+eligibility, loading, dbt and the CSV handoff at the gates in the
+[handoff](docs/handoffs/phase-0-to-1.md). This sequencing resolves the
+earlier specification's expectation to demonstrate those steps in Phase 0.
+Bring any billing dependency back for a decision before proceeding.
+
+---
+
 ## Reference checks for Phase 0
 
 These are **external documentation references, not a claim that services were deployed**. Provider limits and terminology must be rechecked before execution:

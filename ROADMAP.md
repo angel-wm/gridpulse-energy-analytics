@@ -141,6 +141,25 @@ Phase 0 cannot close until:
 - CURRENT_STATE identifies Phase 0 as closed;
 - the coherent Phase 0 documentation state is published as required.
 
+## Phase 1–8 acceptance criteria
+
+Apply the [phase rules](#phase-rules) for authorization, validation, handoff,
+and publication. The [Phase 0 handoff](docs/handoffs/phase-0-to-1.md)
+identifies the runtime checks that still need evidence.
+
+| Phase | Required evidence before closure |
+| --- | --- |
+| 1 | Reproduce the local environment. Verify an eligible project with no linked billing, the scoped human identity, and initial CI checks without cloud credentials or jobs. Resolve Terraform scope using the verified environment. |
+| 2 | Rebuild the local projection from the six tracked sources. Load the 743-row March pilot and reconcile schema, keys, dates and null counts. Record load results and verify that pilot replacement does not duplicate rows. |
+| 3 | Record native GoogleSQL results and bytes scanned before dbt work. Verify OAuth, the pinned dbt runtime, source and staging view without DML, and the pilot CSV handoff through a Power BI Desktop import check. |
+| 4 | After the pilot passes, load and reconcile the full 26,304 hours. Preserve one fact per UTC key and verify clock changes, all three missing-measure cases, the 26,232 paired hours, and peak, MAE and bias. |
+| 5 | Reconcile warehouse layers, capture lineage, and measure persistent bytes and scan costs. Require measurements for partitioning, clustering, or extra persisted models. Rehearse recovery from expiry on a bounded input. |
+| 6 | Refresh and reopen the Power BI Desktop report with the curated CSV. Verify filters, coverage, peak, MAE, and bias. Show that the release artifacts work without paid service sharing. |
+| 7 | Prove cloud-free CI works from a clean checkout and fails on a failed check. Record actual Terraform scope and access boundaries. Cloud CI needs separate authorization and a tested unbilled identity path. |
+| 8 | Rebuild from documented, licensed inputs and pinned tools. Publish portfolio artifacts, attribution, evidence and limitations. Verify the release path and USD 0 actual charges. |
+
+Record actual results under `docs/validation/` using the phase template.
+
 ## Phase 8 portability and core-release evidence
 
 Before declaring the **core project** complete, ensure a reader can rebuild

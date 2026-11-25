@@ -2,12 +2,12 @@
 
 ## Status
 
-Specification status: **PROPOSED / PRE-PROJECT**
+Specification status: **PHASE 0 DESIGN BASELINE**
 
 This document defines the currently intended project.
 
-Requirements become implementation commitments only after Phase 0 review and
-approval.
+Implementation follows this design baseline, the [phase rules](ROADMAP.md#phase-rules),
+and the [runtime verification gates](docs/handoffs/phase-0-to-1.md).
 
 ## Project purpose
 
@@ -51,7 +51,12 @@ those technologies without a real architectural requirement.
 
 The domain is energy analytics.
 
-The exact dataset and business scenario are intentionally **not yet selected**.
+The selected source is [EIA-930](https://www.eia.gov/electricity/930-content/about.html),
+which publishes hourly demand, day-ahead demand forecasts, and net generation
+for U.S. electricity balancing authorities. The initial scope is ERCO (Texas)
+for reporting years 2023–2025, focused on demand peaks and day-ahead forecast
+accuracy. The sections below define the audience, metrics, and missing-data
+rules. See [D-023](DECISIONS.md#d-023--analyze-erco-demand-and-forecast-accuracy-for-20232025).
 
 The final data should ideally support several of the following:
 
@@ -69,6 +74,35 @@ Supplementary datasets may be introduced only when they improve the business
 analysis or modeling challenge rather than merely increasing project scope.
 
 ## Intended users
+
+### Initial report audience and questions
+
+The initial audience is a grid operations analyst reviewing historical
+demand and forecast performance. The report should show when ERCO demand
+peaked, which months and reporting hours had the largest forecast errors,
+and whether the forecast tended to be above or below observed demand.
+
+### Initial KPI definitions
+
+Use EIA's reporting date and hour for report filters and UTC hour ending for
+row identity. EIA publishes time-weighted hourly average power. The demand
+peak is therefore the highest observed hourly average in MW.
+
+| Measure | Calculation within the selected period |
+| --- | --- |
+| Observed peak demand (MW) | Maximum reported demand across the hours with demand available |
+| Mean absolute error (MW) | Average of the absolute difference between forecast and reported demand over paired hours |
+| Forecast bias (MW) | Average of forecast minus reported demand over paired hours. A positive value indicates overforecasting on average |
+| Paired-hour coverage | Hours with both values divided by all expected reporting hours in the selection |
+
+Missing measurements remain null. If a selection has no paired hours, show
+error and bias as unavailable. If it has no observed demand, show the peak as
+unavailable. Roll up error metrics from hourly pairs or from summed error and
+pair counts. Averaging monthly averages would give unequal weights to hours.
+The project uses the source's day-ahead forecast and evaluates it historically.
+
+The [Phase 0 source validation](docs/validation/phase-0-eia930.md) supplies
+reference values for these calculations.
 
 Potential analytical consumers include:
 
@@ -119,11 +153,11 @@ Expected responsibilities:
 dbt is central to GridPulse, but it must not hide native BigQuery concepts that
 the user should understand first.
 
-The local **free dbt distribution** remains to be chosen in Phase 0 / Phase 3
-after checking current adapter support and compatibility. As of September 2026,
-dbt Labs distinguishes free local `dbt` (formerly Fusion) from the fully
-open-source `dbt OSS` (formerly Core v2); older Core v1 terminology must not
-silently dictate the choice. No paid dbt subscription or add-on is required.
+The pilot uses the free local dbt v2 distribution, pinned to
+`dbt==2.0.13` for the pilot. Local CLI startup was verified. Compatibility
+with the unbilled BigQuery workflow remains a pilot check. See the
+[pilot tooling plan](docs/phase-0-pilot-tooling.md#tool-choices) for the
+distribution and adapter rationale.
 
 ### SQL
 
@@ -242,6 +276,12 @@ Unless an approved decision changes the architecture, GridPulse will not use:
 
 Docker is not automatically required. Add it only if the chosen local workflow
 or reproducibility problem clearly benefits from it.
+For example, it could isolate conflicting local dependencies or make a complex
+toolchain repeatable across machines. A documented local environment with pinned
+dependencies may be sufficient and simpler. Compare setup effort, maintenance,
+platform compatibility and any licensing or cost constraints before proposing
+Docker; containers do not by themselves reproduce cloud data or credentials.
+No container workflow has been selected or validated.
 
 ## Functional requirements
 
@@ -282,9 +322,8 @@ The project should prioritize:
 ## Cost constraint — strict zero-billing gate
 
 **The requirement is USD 0 in actual charges, not an expectation of low cost.**
-The current authorization covers documentation decisions only; it does not
-authorize cloud implementation, account upgrades, billing activation, trials,
-subscriptions, chargeable resources, or chargeable workloads.
+Cloud execution and provisioning require specific authorization under the
+phase and cost gates.
 
 **Preferred route:** a BigQuery Sandbox project with **no linked billing
 account or payment method for this project**. Google's published limits
@@ -303,12 +342,12 @@ month are free, but exceeding them or using other services/features can
 generate charges. Staying below these two limits alone does **not** guarantee
 zero billing across Google Cloud.
 
-Phase 0 must demonstrate that the chosen dataset, raw/staging/marts footprint,
-refresh/rebuild approach, dbt materializations, CI execution, Power BI, and any proposed Terraform/IAM
-resources can work with no billing
-account. Do not assume a live BigQuery-to-Power BI connector works without
-billing; evaluate a documented, reproducible bounded export/Import workflow
-if required.
+The [Phase 0 assessment](docs/phase-0-design-baseline.md#zero-charge-feasibility-and-recovery)
+reviews the footprint, rebuild approach, dbt materializations, CI, Power BI,
+and infrastructure against the unbilled route. The
+[handoff](docs/handoffs/phase-0-to-1.md) records the deferred runtime checks
+under the Roadmap exit criteria. Verify each capability before relying on it.
+Power BI uses a bounded CSV export and Desktop Import.
 If a desired function requires billing, do not enable it: use a valid free
 alternative, reduce scope, or explicitly record the blocker/deferred capability.
 
@@ -336,10 +375,37 @@ https://docs.cloud.google.com/bigquery/docs/best-practices-costs
 
 ## Sandbox-compatible batch workflow and future portability
 
-The dataset and business scenario are still undecided. During Phase 0,
-explicitly ask whether the intended workload requires continuously arriving
-records, late corrections, CDC, upserts or history preservation. A historical,
-reproducible, **batch-first** dataset is preferred if analytically rich enough.
+Prepare a historical batch locally from the six EIA-930 Balance CSV files.
+Keep ERCO rows and the common fields needed for the report. Load one
+source-aligned BigQuery raw table keyed by balancing authority and UTC hour
+ending. The input contract and [rebuild plan](docs/phase-0-design-baseline.md#rebuild-package)
+define the schema and handling of source revisions. See
+[D-024](DECISIONS.md#d-024--prepare-a-bounded-eia-930-batch-locally-for-bigquery).
+
+### Input contract
+
+Use a UTF-8 CSV with a header and an explicit load schema. Normalize the date
+and timestamp syntax while preserving the original reporting calendar and
+measurements. Empty measurement cells represent nulls.
+
+| Column | BigQuery type | Source or meaning |
+| --- | --- | --- |
+| `balancing_authority` | STRING | EIA Balancing Authority, fixed to `ERCO` in the initial scope |
+| `reporting_date` | DATE | EIA Data Date, used for year and month selection |
+| `reporting_hour_number` | INT64 | EIA Hour Number within the reporting date |
+| `hour_ending_utc` | TIMESTAMP | EIA UTC Time at End of Hour, normalized with a UTC offset |
+| `demand_mw` | INT64, nullable | EIA Demand (MW) |
+| `forecast_mw` | INT64, nullable | EIA Demand Forecast (MW) |
+| `net_generation_mw` | INT64, nullable | EIA Net Generation (MW), retained as context |
+| `source_file` | STRING | Original EIA filename, matched to the URL and checksum in the source manifest |
+
+The input key is `balancing_authority` plus `hour_ending_utc`. The source uses
+23-hour and 25-hour reporting dates around daylight saving changes. Keep all
+expected UTC hours, including those with missing measures. Validate column
+presence, required values, integer measures, uniqueness, continuity, counts,
+and the original file identity before treating the input as a valid batch.
+If a later source revision changes the contract or counts, review the
+differences before replacing the baseline.
 
 Sandbox does **not** support DML `INSERT`, `UPDATE`, `DELETE` or `MERGE`,
 but ordinary SELECT queries, views and relevant table creation (DDL /
@@ -368,10 +434,9 @@ Never make activating billing or migrating required for completing Phases
 
 ## Dataset-dependent storage optimization
 
-**No materialization optimization is chosen yet.** When Phase 0 selects
-the dataset, estimate the total *and cumulative* Sandbox storage cost of
-raw source-aligned data, staging, intermediate artifacts, marts, experiments,
-replacement/reloads and headroom. The 10 GiB Sandbox limit is **lifetime** and
+Start with one raw table and logical staging and fact views. The
+[capacity assessment](docs/phase-0-design-baseline.md#zero-charge-feasibility-and-recovery)
+includes experiments, repeated loads, and headroom. The 10 GiB Sandbox limit is **lifetime** and
 deleted bytes are not credited back.
 
 Evaluate professional patterns *against actual data and query needs*:
@@ -389,7 +454,7 @@ Evaluate professional patterns *against actual data and query needs*:
 - keep bounded source samples and model rebuilds reproducible;
 - do not assume DML-based incremental strategies work in Sandbox.
 
-Phase 0 should document a capacity estimate and rationale; later phases
+The design baseline covers capacity and rationale. Later phases
 should compare estimates with real storage/query measurements without breaking
 the zero-charge boundary. Storage saved by views may be offset by more bytes
 processed in queries: optimize the complete workload, not one isolated metric.
@@ -482,35 +547,11 @@ GridPulse is successful when:
 - the user can explain and defend the system without relying on memorized
   assistant-generated descriptions.
 
-## Open questions for Phase 0
+## Runtime checks after design
 
-Phase 0 must resolve at least:
-
-- Which energy dataset/source will be used?
-- What business story will GridPulse represent?
-- What is the source grain?
-- What is the analytical grain?
-- Which users/personas matter?
-- Which business questions and KPIs matter?
-- Is supplementary data justified?
-- Which GCP project/account approach will be used?
-- What BigQuery free-tier/sandbox constraints apply?
-- How will ingestion occur?
-- Are Cloud Storage or other GCP resources needed?
-- What BigQuery datasets/layers are required?
-- What cumulative Sandbox storage will source loads, model materializations and planned rebuilds consume?
-- Which layers should be views, ephemeral models or persisted tables after dataset sizing, and what does each choice do to query scans?
-- What dimensional or analytical model is appropriate?
-- What should be learned natively in BigQuery before dbt abstracts it?
-- Which dbt materializations are likely appropriate?
-- Which resources should Terraform manage?
-- What GitHub Actions workflows are safe and useful?
-- How will Power BI connect to the curated layer and how will PBIP/Import be validated without paid licensing?
-- Can Power BI consume BigQuery outputs without a GCP billing account, potentially via a reproducible bounded export and Power BI Desktop Import?
-- Is free Looker Studio CSV upload available with the needed data limits and can refresh be repeatable without duplicate appends?
-- Which local free dbt distribution and version work with the adapter and Sandbox constraints?
-- How will Sandbox 60-day expiry and non-DML restrictions be handled and documented?
-- Can OIDC/Workload Identity Federation be configured in the zero-billing environment, or must cloud CI be deferred?
-- Does the source require incremental DML, correction/upsert, or CDC; could batch reload and bounded table rebuild satisfy its actual business rules?
-- What repeatable export and portable source/dbt/Power BI assets must be preserved before Sandbox expiry or any later authorized move to another environment?
-- What validation and closure criteria apply to every later phase?
+Use the [design baseline](docs/phase-0-design-baseline.md) for the selected
+source, report, operating plan and rebuild package. Before committing to
+the full warehouse load, prove the unbilled environment, the pilot load,
+dbt view and tests, and the Power BI Desktop import from a bounded export.
+See the [handoff](docs/handoffs/phase-0-to-1.md#handoff-to-phase-1) and
+[phase acceptance criteria](ROADMAP.md#phase-18-acceptance-criteria).
