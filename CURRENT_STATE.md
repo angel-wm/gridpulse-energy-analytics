@@ -2,26 +2,26 @@
 
 ## State
 
-Project state: **ANALYTICS FOUNDATION IN PROGRESS**
+Project state: **ANALYTICS FOUNDATION COMPLETE**
 
-Current phase: **Phase 3 — BigQuery Native Analytics and dbt Foundation** (`current`)
+Current phase: **None**
 
-Last closed phase: **Phase 2 — Source Acquisition, Ingestion and Raw Layer** (`closed`)
+Last closed phase: **Phase 3 — BigQuery Native Analytics and dbt Foundation** (`closed`)
 
 Next planned phase:
 **Phase 4 — Analytical Modeling** (`planned`,
 requires explicit authorization)
 
 Implementation status:
-**Native BigQuery KPIs, dbt staging, and CSV export verified for the March 2025 ERCO pilot**
+**Native BigQuery KPIs, dbt staging, and Power BI Desktop import verified for the March 2025 ERCO pilot**
 
 Published implementation:
 Local bootstrap, static checks, GitHub Actions workflow, ingestion procedure,
 pilot SQL, and dbt staging model and tests.
 
 Repository context status:
-The [Phase 2 handoff](docs/handoffs/phase-2-to-3.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 3.
+The [Phase 3 handoff](docs/handoffs/phase-3-to-4.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 4.
 
 ## What is confirmed
 
@@ -83,23 +83,22 @@ bounded replacement matched the generated schema and source checks. Billing
 remained unlinked. See the [ingestion runbook](docs/phase-2-ingestion.md)
 and [validation record](docs/validation/phase-2-ingestion.md).
 
-## Phase 3 progress
+## Phase 3 outcome
 
 The native query verified 743 paired hours, a 62,827 MW peak, 1,034.649 MW
 mean absolute error, and +505.580 MW mean signed forecast error. The
 [Phase 3 validation record](docs/validation/phase-3-analytics.md) records
-the job, bytes scanned, and status of the runtime checks.
+the jobs, bytes scanned, and results.
 The dbt Core staging view and its three data tests passed in the unbilled
-Sandbox. The staging CSV reconciled to the native results. The
-[analytics runbook](docs/phase-3-analytics.md) documents how to reproduce the
-checks and finish the pending Power BI Desktop import.
+Sandbox. The exported CSV and the Power BI Desktop import both reconciled
+to the native results. The [analytics runbook](docs/phase-3-analytics.md)
+documents how to reproduce the checks.
 
 ## Runtime verification still required
 
-Verify the Power BI Desktop CSV import in Phase 3 before loading the full
-three years. The
-[Phase 2 handoff](docs/handoffs/phase-2-to-3.md#handoff-to-phase-3) records the
-next checks. Terraform applies and cloud CI remain deferred.
+The full three-year batch and analytical models belong to Phase 4. The
+[Phase 3 handoff](docs/handoffs/phase-3-to-4.md#handoff-to-phase-4) records
+the next checks. Terraform applies and cloud CI remain deferred.
 
 ## Current authorization
 
@@ -124,4 +123,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 2 handoff to Phase 3](docs/handoffs/phase-2-to-3.md).
+Start with the [Phase 3 handoff to Phase 4](docs/handoffs/phase-3-to-4.md).

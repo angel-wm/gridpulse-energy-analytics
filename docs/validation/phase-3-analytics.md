@@ -56,7 +56,25 @@ native query. The local CSV SHA-256 was
 `4f97d4c0cca986c6dbbffe141aad0d31640fd22691b5675b43dd3e703a947f52`.
 Billing remained unlinked after the jobs.
 
-**PARTIAL.** The export is verified. The local Power BI Desktop Import and
-[DAX reconciliation](check_erco_pilot_import.dax) still require direct
-evidence from Desktop. The automation did not have access to the controls
-in the open Desktop window. Phase 3 remains current.
+Power BI Desktop imported the verified CSV into `erco_pilot` using a
+Power Query `Csv.Document(File.Contents(...))` partition in Import mode.
+The local Power BI Authoring MCP created and refreshed the table in a blank
+Desktop document. A separate DAX execution against the Desktop instance
+confirmed the loaded data.
+
+| [DAX reconciliation](check_erco_pilot_import.dax) | Power BI Desktop |
+| --- | ---: |
+| Rows, distinct UTC hours, and paired hours | 743 each |
+| Peak demand | 62,827 MW |
+| Mean absolute day-ahead forecast error | 1,034.649 MW |
+| Mean forecast minus demand | +505.580 MW |
+
+## Closure
+
+**PASS.** The native query, staging view, export and Desktop import agree.
+The published checkpoint `fb4e7db` passed static checks and dbt parsing
+without warehouse credentials. [GitHub Actions run](https://github.com/angel-wm/gridpulse-energy-analytics/actions/runs/45876603411)
+
+The Desktop session was a local import check. The versioned evidence is
+the query, procedure, and observed results. The
+[Phase 4 handoff](../handoffs/phase-3-to-4.md) records the remaining work.
