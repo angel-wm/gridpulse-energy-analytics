@@ -149,7 +149,7 @@ identifies the runtime checks that still need evidence.
 
 | Phase | Required evidence before closure |
 | --- | --- |
-| 1 | Reproduce the local environment. Verify an eligible project with no linked billing, the scoped human identity, and initial CI checks without cloud credentials or jobs. Resolve Terraform scope using the verified environment. |
+| 1 | Reproduce the local environment. Verify an eligible project with no linked billing, human OAuth with scoped service account impersonation (D-027), and initial CI checks without cloud credentials or jobs. Resolve Terraform scope using the verified environment. |
 | 2 | Rebuild the local projection from the six tracked sources. Load the 743-row March pilot and reconcile schema, keys, dates and null counts. Record load results and verify that pilot replacement does not duplicate rows. |
 | 3 | Record native GoogleSQL results and bytes scanned before dbt work. Verify OAuth, the pinned dbt runtime, source and staging view without DML, and the pilot CSV handoff through a Power BI Desktop import check. |
 | 4 | After the pilot passes, load and reconcile the full 26,304 hours. Preserve one fact per UTC key and verify clock changes, all three missing-measure cases, the 26,232 paired hours, and peak, MAE and bias. |

@@ -2,8 +2,8 @@
 
 Use this runbook to reproduce the local environment and verify the dedicated
 BigQuery Sandbox project before the ingestion phase. The
-[validation record](validation/phase-1-foundation.md) distinguishes the checks
-that ran from those that still need a target project.
+[validation record](validation/phase-1-foundation.md) records the verified
+foundation and the pilot checks still pending.
 
 ## Local environment
 
@@ -46,11 +46,11 @@ From PowerShell:
     & $gridGcloud version
     & $gridBq version
 
-Adjust the SDK path if it was extracted elsewhere. Authenticate only once
-the operating account has been selected and granted the scoped role. Sign
-in through Google's browser flow using `& $gridGcloud auth login`. Keep
-that account's credential store outside Git. The local CLI OAuth login
-and the future dbt Application Default Credentials setup are distinct.
+Adjust the SDK path if it was extracted elsewhere. Sign in with the existing
+owner account through Google's browser flow using
+`& $gridGcloud auth login`. Keep the credential store outside Git. The local
+CLI OAuth login and the future dbt Application Default Credentials setup
+are distinct.
 
 ## Verify an unbilled Sandbox target
 
@@ -82,20 +82,24 @@ account identifiers, or credentials. [Google Cloud billing status documentation]
 
 ## Separate project setup from job execution
 
-The project creator currently holds the general Owner role. Reserve that
-account for setup. Confirm a separate user-controlled operating identity
-before granting it BigQuery Job User on this project. In the ingestion
-phase, grant Data Editor only on the pilot dataset to the raw-load writer.
-Add read access on raw and write access on the model dataset for dbt only
-when that phase requires them.
+The project creator holds the general Owner role. Use the same Google
+login for administration and CLI authentication. D-027 selects a dedicated
+service account for job execution. It has BigQuery Job User on this project.
+The human login has Service Account Token Creator on that service account.
+In the ingestion phase, grant Data Editor only on the pilot dataset to the
+raw-load writer. Add read access on raw and write access on the model dataset
+for dbt only when that phase requires them.
 
-Use local user OAuth for CLI execution. When dbt needs Application Default
-Credentials, keep them outside Git. Verify the operating principal's
-project-level job permission without submitting a query. Then verify
-dataset-level access when the authorized dataset exists. Use the
-[BigQuery IAM roles](https://docs.cloud.google.com/bigquery/docs/access-control)
-and [read-only permission test](https://docs.cloud.google.com/resource-manager/reference/rest/v3/projects/testIamPermissions)
-as references.
+Verify project-level access using short-lived impersonated credentials and
+the [read-only permission test](https://docs.cloud.google.com/resource-manager/reference/rest/v3/projects/testIamPermissions).
+Expect `bigquery.jobs.create` and `resourcemanager.projects.get`. Check that
+project IAM updates, dataset creation, and table creation are absent at
+project scope. Verify dataset-level access once the authorized dataset exists.
+Test impersonated Application Default Credentials with the chosen dbt adapter
+during Phase 3.
+
+[BigQuery IAM roles](https://docs.cloud.google.com/bigquery/docs/access-control) ·
+[Service account impersonation](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation)
 
 ## Terraform scope
 

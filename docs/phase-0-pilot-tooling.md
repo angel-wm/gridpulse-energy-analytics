@@ -58,13 +58,14 @@ the rebuild procedure. A local upload keeps Cloud Storage out of the pilot.
 [BigQuery local batch loading](https://docs.cloud.google.com/bigquery/docs/batch-loading-data) ·
 [bq load flags](https://docs.cloud.google.com/bigquery/docs/reference/bq-cli-reference#bq_load)
 
-For the local pilot identity, scope job creation to the pilot project.
-Grant write access only on the datasets that identity needs to write. The
-dbt identity needs read access to the raw dataset and write access to the
-model dataset. Use user OAuth for the CLI and Application Default Credentials
-for dbt's `method: oauth`. Account setup and dataset grants are separate
-execution steps. Version a profile example with project, dataset, and location
-placeholders. Keep credentials outside the repository.
+Before running the load example, configure and verify explicit impersonation
+of the approved BigQuery operator described in the
+[foundation runbook](phase-1-foundation.md#separate-project-setup-from-job-execution).
+Grant write access only on the pilot dataset. The dbt identity needs read
+access to the raw dataset and write access to the model dataset. Verify
+impersonated Application Default Credentials for dbt in Phase 3. Version a
+profile example with project, dataset, and location placeholders. Keep
+credentials outside the repository.
 
 ## Where SQL ends and dbt begins
 
@@ -113,7 +114,8 @@ and March 9 coverage. An independent SQLite query reproduced the KPI
 baseline. The `dbt==2.0.13` package also installed and returned its version
 in a temporary virtual environment.
 
-The cloud client, authentication, load job, dbt adapter execution, view
-creation, and Power BI import remain to be verified in the authorized pilot.
+The [Phase 1 validation](validation/phase-1-foundation.md) records the
+cloud client, local OAuth, and project-level permission checks. The load job,
+dbt adapter execution, view creation, and Power BI import remain pending.
 If a step requests billing, record the blocker and evaluate a free
 alternative or deferral.

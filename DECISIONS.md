@@ -785,6 +785,43 @@ bootstrap, billing, and trial activation outside Terraform scope.
 
 ---
 
+## D-027 — Use one human login with keyless service account impersonation
+
+Status: **ACCEPTED**
+
+### Context
+
+The human account that created the Sandbox holds the legacy Owner role.
+The owner prefers to keep a single personal Google login. Another binding
+for that same Google identity would not remove its Owner permissions.
+
+### Decision
+
+Keep the existing login for administration and local OAuth. Use a dedicated
+BigQuery operator service account for workload commands through short-lived
+impersonation. Grant that identity BigQuery Job User on the GridPulse
+Sandbox project. Grant the human Service Account Token Creator on that
+individual service account. Keep dataset access separate and assign it
+only in the phase that needs it. Do not generate service account keys.
+
+### Rationale
+
+Impersonated requests use the service account's permissions, which are
+separate from the human's administrative permissions. This satisfies the
+Phase 1 access boundary while retaining one human login. Use an explicit
+impersonation target in operational commands so a login alone does not
+make the intended runtime identity implicit.
+
+### Consequences
+
+Verify local OAuth, temporary credentials, and effective permissions
+without submitting a BigQuery job. Recheck billing before that verification
+and before later workloads. dbt adapter compatibility with impersonated
+Application Default Credentials remains a Phase 3 check. See the
+[foundation runbook](docs/phase-1-foundation.md#separate-project-setup-from-job-execution).
+
+---
+
 ## Reference checks for Phase 0
 
 These are **external documentation references, not a claim that services were deployed**. Provider limits and terminology must be rechecked before execution:

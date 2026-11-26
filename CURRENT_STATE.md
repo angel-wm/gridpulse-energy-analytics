@@ -2,25 +2,25 @@
 
 ## State
 
-Project state: **FOUNDATION IN PROGRESS**
+Project state: **FOUNDATION COMPLETE**
 
-Current phase: **Phase 1 — Repository and Cloud Foundation** (`current`)
+Current phase: **None**
 
-Last closed phase: **Phase 0 — Formal Project Design** (`closed`)
+Last closed phase: **Phase 1 — Repository and Cloud Foundation** (`closed`)
 
 Next planned phase:
-**Phase 2 — Source Acquisition, Ingestion and Raw Layer** (after Phase 1
-closure and explicit authorization)
+**Phase 2 — Source Acquisition, Ingestion and Raw Layer** (`planned`,
+requires explicit authorization)
 
 Implementation status:
-**Local foundation in progress**
+**Repository and cloud foundation complete**
 
 Published implementation:
-**None**
+Local bootstrap, static checks, and the GitHub Actions workflow.
 
 Repository context status:
-Phase 0 is closed on canonical `main`. Phase 1 started in this local
-checkout from the published [Phase 0 handoff](docs/handoffs/phase-0-to-1.md).
+The [Phase 1 handoff](docs/handoffs/phase-1-to-2.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 2.
 
 ## What is confirmed
 
@@ -54,8 +54,6 @@ The following project direction has been approved at a conceptual level:
 - implementation should be learning-first: the user must understand and be
   able to explain what is built.
 
-These confirmations do not mean any implementation exists.
-
 ## Phase 0 outcome
 
 The [design baseline](docs/phase-0-design-baseline.md) defines the hourly
@@ -64,33 +62,33 @@ model, CSV export, recovery plan, and zero-charge design. The
 and limitations. Local checks verified 26,304 distinct hours, 26,232
 paired hours, the 743-row March pilot fixture, and dbt CLI startup.
 
-## Runtime verification still required
-
-Verify the unbilled project and identity first. Then reconcile the March
-load, dbt execution, and Power BI Desktop CSV import before loading the
-full three years. [The handoff](docs/handoffs/phase-0-to-1.md#handoff-to-phase-1)
-assigns these gates to later phases. Terraform applies and cloud CI remain
-deferred until the relevant capabilities and authorization exist.
-
-## Phase 1 progress
+## Phase 1 outcome
 
 Use the [foundation runbook](docs/phase-1-foundation.md) and
 [validation record](docs/validation/phase-1-foundation.md) for the local
-setup, static checks, and project eligibility gate. The pinned dbt CLI
-and static checks were verified locally. Google Cloud created the dedicated
-GridPulse project on 2026-11-26. The console confirmed BigQuery Sandbox
-and no linked billing account. The initial GitHub Actions run passed.
-The console showed that the project creator holds the legacy Owner role.
-Google Cloud CLI 594.0.1 and BigQuery CLI 2.1.42 start locally. The limited
-operating identity and OAuth verification remain open.
-Terraform is deferred for the single Sandbox (D-026).
+setup, static checks, and project eligibility gate. The pinned dbt CLI,
+Google Cloud CLI, and BigQuery CLI start locally. The static workflow passed
+on GitHub Actions. The dedicated project showed BigQuery Sandbox in the
+console, and both the console and CLI confirmed that billing was unlinked.
+Local OAuth and short-lived impersonation passed the project-level permission
+check for the BigQuery operator service account (D-027). The project creator
+retains Owner for administration. Terraform is deferred for the single
+Sandbox (D-026).
+
+## Runtime verification still required
+
+Recheck billing and the operator identity before the March pilot in Phase 2.
+Reconcile the pilot load, then verify dbt execution and Power BI Desktop CSV
+import in Phase 3 before loading the full three years. The
+[Phase 1 handoff](docs/handoffs/phase-1-to-2.md#handoff-to-phase-2) records
+the next checks. Terraform applies and cloud CI remain deferred.
 
 ## Current authorization
 
-The user explicitly authorized starting Phase 1 and creating the dedicated
-Sandbox project without linking billing or activating a trial. Other
-cloud provisioning and workload execution require specific authorization
-under the phase and cost gates.
+The user explicitly authorized Phase 1, the dedicated Sandbox project,
+and the keyless operator account and scoped grants in D-027. Other cloud
+provisioning and workload execution require specific authorization under
+the phase and cost gates.
 GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
 account for the Sandbox route.
 
@@ -108,4 +106,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 0 handoff to Phase 1](docs/handoffs/phase-0-to-1.md).
+Start with the [Phase 1 handoff to Phase 2](docs/handoffs/phase-1-to-2.md).
