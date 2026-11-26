@@ -753,6 +753,38 @@ Bring any billing dependency back for a decision before proceeding.
 
 ---
 
+## D-026 — Use a manual bootstrap for the single Sandbox
+
+Status: **ACCEPTED**
+
+### Context
+
+Phase 1 has one dedicated project. The console displays BigQuery Sandbox
+and no linked billing account. The initial static workflow has passed
+without cloud credentials.
+
+### Decision
+
+Use the documented console and CLI steps for the initial foundation.
+Defer Terraform for the current Sandbox. Revisit it when documented,
+repeatable resource setup adds value and the proposed operations can be
+verified without billing.
+
+### Rationale
+
+There is one manually created project and the authorized workloads will
+introduce datasets incrementally. Terraform would add a state management
+and IAM dependency before there is a second configuration to reproduce.
+
+### Consequences
+
+Maintain reproducible setup and verification instructions in the
+[foundation runbook](docs/phase-1-foundation.md). Phase 7 may evaluate
+dataset metadata and least-privilege grants. Keep account and project
+bootstrap, billing, and trial activation outside Terraform scope.
+
+---
+
 ## Reference checks for Phase 0
 
 These are **external documentation references, not a claim that services were deployed**. Provider limits and terminology must be rechecked before execution:

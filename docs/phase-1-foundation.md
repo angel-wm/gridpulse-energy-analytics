@@ -29,6 +29,29 @@ by the [GitHub Actions free usage policy](https://docs.github.com/en/actions/con
 Recheck runner eligibility if visibility or runner configuration changes.
 Use the local command if hosted execution cannot be kept free.
 
+## Google Cloud CLI on Windows
+
+The Phase 1 verification uses the official versioned Windows x64 archive
+for Google Cloud CLI **594.0.1**, which includes `bq` **2.1.42**. Check the
+archive against the SHA-256 on the
+[Google Cloud downloads page](https://docs.cloud.google.com/sdk/docs/downloads-versioned-archives)
+before extracting it. The local GridPulse install uses a directory under
+`LOCALAPPDATA`, with a separate CLI configuration outside the repository.
+From PowerShell:
+
+    $gridSdk = Join-Path $env:LOCALAPPDATA 'GridPulseTools/google-cloud-cli-594.0.1/google-cloud-sdk/bin'
+    $env:CLOUDSDK_CONFIG = Join-Path $env:LOCALAPPDATA 'GridPulseTools/gcloud-config'
+    $gridGcloud = Join-Path $gridSdk 'gcloud.cmd'
+    $gridBq = Join-Path $gridSdk 'bq.cmd'
+    & $gridGcloud version
+    & $gridBq version
+
+Adjust the SDK path if it was extracted elsewhere. Authenticate only once
+the operating account has been selected and granted the scoped role. Sign
+in through Google's browser flow using `& $gridGcloud auth login`. Keep
+that account's credential store outside Git. The local CLI OAuth login
+and the future dbt Application Default Credentials setup are distinct.
+
 ## Verify an unbilled Sandbox target
 
 A **project** is the boundary for access, quotas, and the billing account.
@@ -50,17 +73,34 @@ repeatable verification once the [Google Cloud CLI](https://docs.cloud.google.co
 and local OAuth are available:
 
     $gridProject = '<verified-gridpulse-project-id>'
-    gcloud billing projects describe $gridProject --format='json(billingEnabled,billingAccountName)'
+    & $gridGcloud billing projects describe $gridProject --format='json(billingEnabled,billingAccountName)'
 
 Require a successful command with `billingEnabled` equal to `false` and
 `billingAccountName` empty or absent. A permission error or unreadable project
 does not establish billing status. Record the check and outcome without tokens,
 account identifiers, or credentials. [Google Cloud billing status documentation](https://docs.cloud.google.com/billing/docs/how-to/verify-billing-enabled)
 
-For the later pilot, distinguish setup permissions from day-to-day execution.
-The job identity needs BigQuery Job User for the project and only the
-necessary read and write access on its datasets. Use user OAuth and keep
-Application Default Credentials outside Git. Verify actual access on the
-designated project before any load. Keep Terraform and cloud CI deferred
-until there is a verified unbilled environment and a justified resource
-or automation scope. [Phase 0 identity and infrastructure design](phase-0-design-baseline.md#identity-infrastructure-and-ci)
+## Separate project setup from job execution
+
+The project creator currently holds the general Owner role. Reserve that
+account for setup. Confirm a separate user-controlled operating identity
+before granting it BigQuery Job User on this project. In the ingestion
+phase, grant Data Editor only on the pilot dataset to the raw-load writer.
+Add read access on raw and write access on the model dataset for dbt only
+when that phase requires them.
+
+Use local user OAuth for CLI execution. When dbt needs Application Default
+Credentials, keep them outside Git. Verify the operating principal's
+project-level job permission without submitting a query. Then verify
+dataset-level access when the authorized dataset exists. Use the
+[BigQuery IAM roles](https://docs.cloud.google.com/bigquery/docs/access-control)
+and [read-only permission test](https://docs.cloud.google.com/resource-manager/reference/rest/v3/projects/testIamPermissions)
+as references.
+
+## Terraform scope
+
+The project uses the documented manual Sandbox creation path for its
+single environment (D-026). Evaluate Terraform only when a subsequent
+authorized phase has a concrete repeatable need for dataset metadata
+or restricted IAM. Cloud CI remains deferred pending the required
+identity and cost checks.

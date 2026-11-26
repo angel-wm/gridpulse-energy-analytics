@@ -79,8 +79,11 @@ Use the [foundation runbook](docs/phase-1-foundation.md) and
 setup, static checks, and project eligibility gate. The pinned dbt CLI
 and static checks were verified locally. Google Cloud created the dedicated
 GridPulse project on 2026-11-26. The console confirmed BigQuery Sandbox
-and no linked billing account. Scoped IAM, CLI authentication, and hosted
-CI are pending validation.
+and no linked billing account. The initial GitHub Actions run passed.
+The console showed that the project creator holds the legacy Owner role.
+Google Cloud CLI 594.0.1 and BigQuery CLI 2.1.42 start locally. The limited
+operating identity and OAuth verification remain open.
+Terraform is deferred for the single Sandbox (D-026).
 
 ## Current authorization
 
