@@ -1,4 +1,4 @@
-"""Profile the six public EIA-930 Balance files and optionally write a pilot fixture."""
+"""Validate six public EIA-930 Balance snapshots and export an ERCO batch."""
 
 import argparse
 import csv
@@ -21,7 +21,15 @@ EXPECTED = {
     "2025": (8760, 48, 48, 48, 8688),
 }
 PILOT_MONTH = "2025-03"
-PILOT_SCHEMA = (
+SOURCE_SHA256 = {
+    "EIA930_BALANCE_2023_Jan_Jun.csv": "a0e14e9c07ab4cc1de3e384c7be890b0c61d9de3fe04ad3ae5ec739f1f35ec1b",
+    "EIA930_BALANCE_2023_Jul_Dec.csv": "c719fc1b513eec8982ce209b6e3173fc64b2d0d243f83d3bf0d8d1adf6222de2",
+    "EIA930_BALANCE_2024_Jan_Jun.csv": "26768c495c3ba987e29d79df2e40d4e741f9dbcff086f53c12ff774465756a10",
+    "EIA930_BALANCE_2024_Jul_Dec.csv": "a602a8e577cfdd2fa3083413eaa4dd8ba7f0d2b26a2986f8f6d22917465ea49f",
+    "EIA930_BALANCE_2025_Jan_Jun.csv": "fac4bb991dfa1dab3b4b35300ccab54ac99be13a40ce91954db8ddafb2816242",
+    "EIA930_BALANCE_2025_Jul_Dec.csv": "1146158b972439db7c7f4cc7d0491e07644ddbf244d03b8ecb44cb2c833d10f1",
+}
+EXPORT_SCHEMA = (
     ("balancing_authority", "STRING", "REQUIRED"),
     ("reporting_date", "DATE", "REQUIRED"),
     ("reporting_hour_number", "INTEGER", "REQUIRED"),
@@ -60,20 +68,20 @@ def summarize(rows):
     }
 
 
-def write_pilot(output_dir, rows):
+def write_projection(output_dir, rows, filename, label):
     output_dir.mkdir()
-    csv_path = output_dir / "erco-2025-03.csv"
+    csv_path = output_dir / filename
     schema_path = output_dir / "eia930-erco-schema.json"
     with csv_path.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.writer(stream, lineterminator="\n")
-        writer.writerow(name for name, _, _ in PILOT_SCHEMA)
+        writer.writerow(name for name, _, _ in EXPORT_SCHEMA)
         writer.writerows(sorted(rows, key=lambda row: row[3]))
     schema = [{"name": name, "type": field_type, "mode": mode}
-              for name, field_type, mode in PILOT_SCHEMA]
+              for name, field_type, mode in EXPORT_SCHEMA]
     schema_path.write_text(json.dumps(schema, indent=2) + "\n", encoding="utf-8")
     with csv_path.open("rb") as stream:
         digest = hashlib.file_digest(stream, "sha256").hexdigest()
-    print("pilot CSV", len(rows), csv_path.stat().st_size, digest, csv_path)
+    print(label, len(rows), csv_path.stat().st_size, digest, csv_path)
 
 
 def check_hourly_model(rows):
@@ -121,18 +129,20 @@ def check_hourly_model(rows):
     )
 
 
-def check_sources(files, pilot_output):
+def check_sources(files, pilot_output, history_output=None):
     all_rows = []
     years = defaultdict(list)
     days = Counter()
     month_rows = []
-    pilot_export = []
+    export_rows = []
     keys_by_day = defaultdict(list)
     measure_types = Counter()
     file_periods = Counter()
     for path in files:
         with path.open("rb") as source:
             checksum = hashlib.file_digest(source, "sha256").hexdigest()
+        if history_output is not None and checksum != SOURCE_SHA256.get(path.name):
+            raise ValueError(f"Source snapshot differs from the pinned hash: {path.name}")
         count = 0
         periods = set()
         with path.open(encoding="utf-8-sig", newline="") as source:
@@ -160,12 +170,13 @@ def check_sources(files, pilot_output):
                 years[day[:4]].append(row)
                 if day.startswith(PILOT_MONTH):
                     month_rows.append(row)
-                    if pilot_output is not None:
-                        pilot_export.append((
-                            "ERCO", day, int(hour), f"{timestamp:%Y-%m-%d %H:%M:%S}+00:00",
-                            *(int(value) if value is not None else None for value in measures),
-                            f"EIA930_BALANCE_{report_date.year}_Jan_Jun.csv",
-                        ))
+                if history_output is not None or (pilot_output is not None and day.startswith(PILOT_MONTH)):
+                    half = "Jan_Jun" if report_date.month <= 6 else "Jul_Dec"
+                    export_rows.append((
+                        "ERCO", day, int(hour), f"{timestamp:%Y-%m-%d %H:%M:%S}+00:00",
+                        *(int(value) if value is not None else None for value in measures),
+                        f"EIA930_BALANCE_{report_date.year}_{half}.csv",
+                    ))
                 count += 1
         print(path.name, sorted(periods), path.stat().st_size, checksum, count, sep="\t")
         if len(periods) != 1:
@@ -200,13 +211,17 @@ def check_sources(files, pilot_output):
         and check_hourly_model(all_rows)
     )
     if valid and pilot_output is not None:
-        write_pilot(pilot_output, pilot_export)
+        write_projection(pilot_output, export_rows, "erco-2025-03.csv", "pilot CSV")
+    if valid and history_output is not None:
+        write_projection(history_output, export_rows, "erco-2023-2025.csv", "historical CSV")
     return valid
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("files", type=Path, nargs=6, metavar="CSV")
-    parser.add_argument("--pilot-output", type=Path, help="New local folder for the pilot CSV and schema")
+    output = parser.add_mutually_exclusive_group()
+    output.add_argument("--pilot-output", type=Path, help="New local folder for the pilot CSV and schema")
+    output.add_argument("--history-output", type=Path, help="New local folder for the historical CSV and schema")
     args = parser.parse_args()
-    raise SystemExit(0 if check_sources(args.files, args.pilot_output) else 1)
+    raise SystemExit(0 if check_sources(args.files, args.pilot_output, args.history_output) else 1)

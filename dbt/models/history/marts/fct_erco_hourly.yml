@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: fct_erco_hourly
+    description: One ERCO fact per UTC hour with source coverage and forecast errors.
+    columns:
+      - name: reporting_date
+        description: EIA reporting date for calendar filters.
+      - name: local_start_hour
+        description: Hour of the interval start in America/Chicago. Repeated local hours keep their distinct UTC keys.
+      - name: paired_hour
+        description: One when demand and forecast both exist, and zero otherwise.
+      - name: forecast_error_mw
+        description: Forecast minus demand, null if either input is missing.
+      - name: absolute_error_mw
+        description: Absolute forecast error, null if either input is missing.

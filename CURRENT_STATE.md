@@ -2,26 +2,26 @@
 
 ## State
 
-Project state: **ANALYTICS FOUNDATION COMPLETE**
+Project state: **HISTORICAL MODELING COMPLETE**
 
 Current phase: **None**
 
-Last closed phase: **Phase 3 — BigQuery Native Analytics and dbt Foundation** (`closed`)
+Last closed phase: **Phase 4 — Analytical Modeling** (`closed`)
 
 Next planned phase:
-**Phase 4 — Analytical Modeling** (`planned`,
+**Phase 5 — Data Quality, Documentation and Performance** (`planned`,
 requires explicit authorization)
 
 Implementation status:
-**Native BigQuery KPIs, dbt staging, and Power BI Desktop import verified for the March 2025 ERCO pilot**
+**Historical ERCO raw table, staging view, and hourly fact verified in BigQuery Sandbox**
 
 Published implementation:
-Local bootstrap, static checks, GitHub Actions workflow, ingestion procedure,
-pilot SQL, and dbt staging model and tests.
+Local bootstrap, static checks, GitHub Actions workflow, pilot and historical
+ingestion, dbt models and tests, and historical reconciliation SQL.
 
 Repository context status:
-The [Phase 3 handoff](docs/handoffs/phase-3-to-4.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 4.
+The [Phase 4 handoff](docs/handoffs/phase-4-to-5.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 5.
 
 ## What is confirmed
 
@@ -94,18 +94,19 @@ Sandbox. The exported CSV and the Power BI Desktop import both reconciled
 to the native results. The [analytics runbook](docs/phase-3-analytics.md)
 documents how to reproduce the checks.
 
-## Runtime verification still required
+## Phase 4 outcome
 
-The full three-year batch and analytical models belong to Phase 4. The
-[Phase 3 handoff](docs/handoffs/phase-3-to-4.md#handoff-to-phase-4) records
-the next checks. Terraform applies and cloud CI remain deferred.
+The historical raw table and hourly fact contain 26,304 distinct UTC hours
+with 26,232 paired measurements. The five dbt data tests passed. Peak
+demand, forecast error, bias, clock changes, and missingness matched the
+baseline. The [modeling runbook](docs/phase-4-modeling.md) and
+[validation record](docs/validation/phase-4-modeling.md) document the results.
 
 ## Current authorization
 
-The user explicitly authorized Phase 3 on 2026-11-26. The scope covers native
-BigQuery analytics, a dbt source and staging view, and the local Power BI
-Desktop import check for the March pilot. Phase 4 and the full historical
-load require explicit authorization.
+The user explicitly authorized Phase 4 on 2026-11-26. The scope covers the
+2023–2025 ERCO raw load and historical analytical models in the unbilled
+Sandbox. Phase 5 requires explicit authorization.
 GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
 account for the Sandbox route.
 
@@ -123,4 +124,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 3 handoff to Phase 4](docs/handoffs/phase-3-to-4.md).
+Start with the [Phase 4 handoff to Phase 5](docs/handoffs/phase-4-to-5.md).

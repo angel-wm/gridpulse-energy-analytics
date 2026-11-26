@@ -3,6 +3,8 @@ version: 2
 sources:
   - name: eia930
     schema: gridpulse_raw_pilot
+    config:
+      enabled: "{{ target.name == 'pilot' }}"
     tables:
       - name: erco_202503
         identifier: eia930_erco_202503
@@ -15,11 +17,17 @@ models:
       - name: hour_ending_utc
         description: UTC hour ending and unique key within the ERCO pilot.
         data_tests:
-          - not_null
-          - unique
+          - not_null:
+              config:
+                enabled: "{{ target.name == 'pilot' }}"
+          - unique:
+              config:
+                enabled: "{{ target.name == 'pilot' }}"
       - name: balancing_authority
         description: EIA balancing authority code for the pilot.
         data_tests:
           - accepted_values:
               arguments:
                 values: ['ERCO']
+              config:
+                enabled: "{{ target.name == 'pilot' }}"

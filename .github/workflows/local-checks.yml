@@ -27,4 +27,6 @@ jobs:
         env:
           GRIDPULSE_PROJECT_ID: gridpulse-offline
           DBT_SEND_ANONYMOUS_USAGE_STATS: 'false'
-        run: dbt parse --project-dir dbt --profiles-dir dbt
+        run: |
+          dbt parse --project-dir dbt --profiles-dir dbt --target pilot
+          dbt parse --project-dir dbt --profiles-dir dbt --target history

@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: eia930_history
+    schema: gridpulse_raw
+    config:
+      enabled: "{{ target.name == 'history' }}"
+    tables:
+      - name: erco_hourly
+        identifier: eia930_erco_hourly
+        description: Fixed 2023–2025 ERCO Balance snapshot with EIA reporting dates.
+
+models:
+  - name: stg_eia930_erco_hourly
+    description: Source-aligned staging view with one row per ERCO UTC hour ending.
+    columns:
+      - name: hour_ending_utc
+        data_tests:
+          - not_null:
+              config:
+                enabled: "{{ target.name == 'history' }}"
+          - unique:
+              config:
+                enabled: "{{ target.name == 'history' }}"
+      - name: balancing_authority
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['ERCO']
+              config:
+                enabled: "{{ target.name == 'history' }}"

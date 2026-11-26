@@ -8,3 +8,7 @@ models:
   gridpulse:
     staging:
       +materialized: view
+      +enabled: "{{ target.name == 'pilot' }}"
+    history:
+      +materialized: view
+      +enabled: "{{ target.name == 'history' }}"
