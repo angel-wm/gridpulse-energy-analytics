@@ -115,7 +115,8 @@ baseline. The `dbt==2.0.13` package also installed and returned its version
 in a temporary virtual environment.
 
 The [Phase 1 validation](validation/phase-1-foundation.md) records the
-cloud client, local OAuth, and project-level permission checks. The load job,
-dbt adapter execution, view creation, and Power BI import remain pending.
+cloud client, local OAuth, and project-level permission checks. Follow the
+[Phase 2 ingestion runbook](phase-2-ingestion.md) for the live load and
+reconciliation procedure.
 If a step requests billing, record the blocker and evaluate a free
 alternative or deferral.

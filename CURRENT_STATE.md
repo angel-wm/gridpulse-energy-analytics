@@ -2,25 +2,26 @@
 
 ## State
 
-Project state: **FOUNDATION COMPLETE**
+Project state: **INGESTION PILOT COMPLETE**
 
 Current phase: **None**
 
-Last closed phase: **Phase 1 — Repository and Cloud Foundation** (`closed`)
+Last closed phase: **Phase 2 — Source Acquisition, Ingestion and Raw Layer** (`closed`)
 
 Next planned phase:
-**Phase 2 — Source Acquisition, Ingestion and Raw Layer** (`planned`,
+**Phase 3 — BigQuery Native Analytics and dbt Foundation** (`planned`,
 requires explicit authorization)
 
 Implementation status:
-**Repository and cloud foundation complete**
+**March 2025 ERCO ingestion pilot verified in BigQuery Sandbox**
 
 Published implementation:
-Local bootstrap, static checks, and the GitHub Actions workflow.
+Local bootstrap, static checks, GitHub Actions workflow, ingestion procedure,
+and pilot reconciliation SQL.
 
 Repository context status:
-The [Phase 1 handoff](docs/handoffs/phase-1-to-2.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 2.
+The [Phase 2 handoff](docs/handoffs/phase-2-to-3.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 3.
 
 ## What is confirmed
 
@@ -75,20 +76,26 @@ check for the BigQuery operator service account (D-027). The project creator
 retains Owner for administration. Terraform is deferred for the single
 Sandbox (D-026).
 
+## Phase 2 outcome
+
+The March 2025 raw pilot in `US` contains 743 ERCO rows. The initial load and
+bounded replacement matched the generated schema and source checks. Billing
+remained unlinked. See the [ingestion runbook](docs/phase-2-ingestion.md)
+and [validation record](docs/validation/phase-2-ingestion.md).
+
 ## Runtime verification still required
 
-Recheck billing and the operator identity before the March pilot in Phase 2.
-Reconcile the pilot load, then verify dbt execution and Power BI Desktop CSV
-import in Phase 3 before loading the full three years. The
-[Phase 1 handoff](docs/handoffs/phase-1-to-2.md#handoff-to-phase-2) records
-the next checks. Terraform applies and cloud CI remain deferred.
+Verify native analytics, dbt execution, and Power BI Desktop CSV import in
+Phase 3 before loading the full three years. The
+[Phase 2 handoff](docs/handoffs/phase-2-to-3.md#handoff-to-phase-3) records the
+next checks. Terraform applies and cloud CI remain deferred.
 
 ## Current authorization
 
-The user explicitly authorized Phase 1, the dedicated Sandbox project,
-and the keyless operator account and scoped grants in D-027. Other cloud
-provisioning and workload execution require specific authorization under
-the phase and cost gates.
+The user explicitly authorized Phase 2 on 2026-11-26, with documentation,
+commit, and push. The scope is the March 2025 ERCO pilot in the dedicated,
+unbilled Sandbox, using the dataset-scoped operator in the Phase 1 handoff.
+The full historical load and Phase 3 require their own authorization.
 GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
 account for the Sandbox route.
 
@@ -106,4 +113,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 1 handoff to Phase 2](docs/handoffs/phase-1-to-2.md).
+Start with the [Phase 2 handoff to Phase 3](docs/handoffs/phase-2-to-3.md).

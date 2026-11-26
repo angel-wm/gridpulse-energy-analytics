@@ -4,7 +4,7 @@ GridPulse is a planned **Analytics Engineering + Business Intelligence** portfol
 
 It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD; with an optional later Looker Studio experiment** where justified and feasible at **USD 0 actual charges**.
 
-> **Current status:** Phase 1 foundation complete. Phase 2 is planned.
+> **Current status:** Phase 2 ingestion pilot complete. Phase 3 is planned.
 >
 > The design uses EIA-930 for ERCO (Texas), 2023–2025. The project requires **USD 0 actual charges**.
 
@@ -75,23 +75,22 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 
 | Item | State |
 | --- | --- |
-| Project | Foundation complete |
+| Project | Ingestion pilot complete |
 | Current phase | None |
-| Last closed phase | Phase 1 — Repository and Cloud Foundation |
-| Next planned phase | Phase 2 — Source Acquisition, Ingestion and Raw Layer |
+| Last closed phase | Phase 2 — Source Acquisition, Ingestion and Raw Layer |
+| Next planned phase | Phase 3 — BigQuery Native Analytics and dbt Foundation |
 | Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
 | Architecture | Design baseline with runtime verification gates |
-| BigQuery resources | Unbilled Sandbox project verified. Pilot dataset pending |
+| BigQuery resources | Unbilled Sandbox with a verified 743-row March 2025 raw pilot |
 | dbt project | Not implemented |
 | Terraform / CI/CD | Static GitHub Actions checks verified. Terraform and cloud CI deferred |
 | Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
 | Power BI | Not implemented |
 | Looker Studio | Optional Phase 9, not begun; not required for core completion |
 
-The [Phase 1 foundation runbook](docs/phase-1-foundation.md) covers local
-setup and the unbilled Sandbox gate. The
-[Phase 1 handoff](docs/handoffs/phase-1-to-2.md) links the verified foundation
-and describes the pending BigQuery pilot. See the
+The [Phase 2 ingestion runbook](docs/phase-2-ingestion.md) explains how to
+rebuild the pilot. The [Phase 2 handoff](docs/handoffs/phase-2-to-3.md)
+links the results and describes the next analytics checks. See the
 [strict zero-billing gate](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate)
 and [phase rules](ROADMAP.md#phase-rules).
 
