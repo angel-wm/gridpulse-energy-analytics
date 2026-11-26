@@ -2,22 +2,22 @@
 
 ## State
 
-Project state: **INGESTION PILOT COMPLETE**
+Project state: **ANALYTICS FOUNDATION IN PROGRESS**
 
-Current phase: **None**
+Current phase: **Phase 3 — BigQuery Native Analytics and dbt Foundation** (`current`)
 
 Last closed phase: **Phase 2 — Source Acquisition, Ingestion and Raw Layer** (`closed`)
 
 Next planned phase:
-**Phase 3 — BigQuery Native Analytics and dbt Foundation** (`planned`,
+**Phase 4 — Analytical Modeling** (`planned`,
 requires explicit authorization)
 
 Implementation status:
-**March 2025 ERCO ingestion pilot verified in BigQuery Sandbox**
+**Native BigQuery KPIs, dbt staging, and CSV export verified for the March 2025 ERCO pilot**
 
 Published implementation:
 Local bootstrap, static checks, GitHub Actions workflow, ingestion procedure,
-and pilot reconciliation SQL.
+pilot SQL, and dbt staging model and tests.
 
 Repository context status:
 The [Phase 2 handoff](docs/handoffs/phase-2-to-3.md) identifies the closure
@@ -83,19 +83,30 @@ bounded replacement matched the generated schema and source checks. Billing
 remained unlinked. See the [ingestion runbook](docs/phase-2-ingestion.md)
 and [validation record](docs/validation/phase-2-ingestion.md).
 
+## Phase 3 progress
+
+The native query verified 743 paired hours, a 62,827 MW peak, 1,034.649 MW
+mean absolute error, and +505.580 MW mean signed forecast error. The
+[Phase 3 validation record](docs/validation/phase-3-analytics.md) records
+the job, bytes scanned, and status of the runtime checks.
+The dbt Core staging view and its three data tests passed in the unbilled
+Sandbox. The staging CSV reconciled to the native results. The
+[analytics runbook](docs/phase-3-analytics.md) documents how to reproduce the
+checks and finish the pending Power BI Desktop import.
+
 ## Runtime verification still required
 
-Verify native analytics, dbt execution, and Power BI Desktop CSV import in
-Phase 3 before loading the full three years. The
+Verify the Power BI Desktop CSV import in Phase 3 before loading the full
+three years. The
 [Phase 2 handoff](docs/handoffs/phase-2-to-3.md#handoff-to-phase-3) records the
 next checks. Terraform applies and cloud CI remain deferred.
 
 ## Current authorization
 
-The user explicitly authorized Phase 2 on 2026-11-26, with documentation,
-commit, and push. The scope is the March 2025 ERCO pilot in the dedicated,
-unbilled Sandbox, using the dataset-scoped operator in the Phase 1 handoff.
-The full historical load and Phase 3 require their own authorization.
+The user explicitly authorized Phase 3 on 2026-11-26. The scope covers native
+BigQuery analytics, a dbt source and staging view, and the local Power BI
+Desktop import check for the March pilot. Phase 4 and the full historical
+load require explicit authorization.
 GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
 account for the Sandbox route.
 

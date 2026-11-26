@@ -153,11 +153,10 @@ Expected responsibilities:
 dbt is central to GridPulse, but it must not hide native BigQuery concepts that
 the user should understand first.
 
-The pilot uses the free local dbt v2 distribution, pinned to
-`dbt==2.0.13` for the pilot. Local CLI startup was verified. Compatibility
-with the unbilled BigQuery workflow remains a pilot check. See the
-[pilot tooling plan](docs/phase-0-pilot-tooling.md#tool-choices) for the
-distribution and adapter rationale.
+The pilot uses the free local dbt Core distribution with the Python BigQuery
+adapter selected during Phase 3. See
+[D-028](DECISIONS.md#d-028--use-dbt-core-v1-for-the-unbilled-bigquery-pilot)
+for the pinned versions and compatibility rationale.
 
 ### SQL
 

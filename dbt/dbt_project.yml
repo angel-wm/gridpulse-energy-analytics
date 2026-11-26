@@ -1,0 +1,10 @@
+name: gridpulse
+version: '0.1.0'
+config-version: 2
+profile: gridpulse
+model-paths: ['models']
+
+models:
+  gridpulse:
+    staging:
+      +materialized: view

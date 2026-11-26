@@ -1,0 +1,11 @@
+gridpulse:
+  target: pilot
+  outputs:
+    pilot:
+      type: bigquery
+      method: oauth
+      database: "{{ env_var('GRIDPULSE_PROJECT_ID') }}"
+      schema: gridpulse_models_pilot
+      location: US
+      threads: 1
+      maximum_bytes_billed: 10485760

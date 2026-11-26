@@ -822,6 +822,34 @@ Application Default Credentials remains a Phase 3 check. See the
 
 ---
 
+## D-028 — Use dbt Core v1 for the unbilled BigQuery pilot
+
+Status: **ACCEPTED**
+
+### Context
+
+The D-025 runtime gate found that dbt v2.0.13 could parse the pilot
+project. Its connection check required BigQuery Read Session User at
+project scope for the Storage Read API. The documented Python adapter
+compatibility path connected through REST using the existing scoped
+operator and impersonated Application Default Credentials.
+
+### Decision
+
+Use dbt Core `1.12.7` and `dbt-bigquery` `1.12.4` on Python 3.12 for the
+pilot and CI parse. This supersedes the dbt runtime selection in D-025.
+The existing view design, authentication policy, and cost gate still apply.
+
+### Consequences
+
+Install the tested pair in an isolated environment using
+[requirements-dbt-core.txt](requirements-dbt-core.txt). Use the existing
+dataset grants and project job role. The
+[Phase 3 validation](docs/validation/phase-3-analytics.md) records the
+connection evidence and remaining runtime checks.
+
+---
+
 ## Reference checks for Phase 0
 
 These are **external documentation references, not a claim that services were deployed**. Provider limits and terminology must be rechecked before execution:

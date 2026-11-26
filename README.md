@@ -4,7 +4,7 @@ GridPulse is a planned **Analytics Engineering + Business Intelligence** portfol
 
 It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD; with an optional later Looker Studio experiment** where justified and feasible at **USD 0 actual charges**.
 
-> **Current status:** Phase 2 ingestion pilot complete. Phase 3 is planned.
+> **Current status:** Phase 3 — Native BigQuery analytics and dbt foundation in progress.
 >
 > The design uses EIA-930 for ERCO (Texas), 2023–2025. The project requires **USD 0 actual charges**.
 
@@ -75,17 +75,17 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 
 | Item | State |
 | --- | --- |
-| Project | Ingestion pilot complete |
-| Current phase | None |
+| Project | Analytics foundation in progress |
+| Current phase | Phase 3 — BigQuery Native Analytics and dbt Foundation |
 | Last closed phase | Phase 2 — Source Acquisition, Ingestion and Raw Layer |
-| Next planned phase | Phase 3 — BigQuery Native Analytics and dbt Foundation |
+| Next planned phase | Phase 4 — Analytical Modeling |
 | Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
 | Architecture | Design baseline with runtime verification gates |
 | BigQuery resources | Unbilled Sandbox with a verified 743-row March 2025 raw pilot |
-| dbt project | Not implemented |
+| dbt project | Pilot staging view and three tests verified in BigQuery Sandbox |
 | Terraform / CI/CD | Static GitHub Actions checks verified. Terraform and cloud CI deferred |
 | Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
-| Power BI | Not implemented |
+| Power BI | Pilot CSV verified. Desktop import check pending |
 | Looker Studio | Optional Phase 9, not begun; not required for core completion |
 
 The [Phase 2 ingestion runbook](docs/phase-2-ingestion.md) explains how to
@@ -95,6 +95,8 @@ links the results and describes the next analytics checks. See the
 and [phase rules](ROADMAP.md#phase-rules).
 
 For the authoritative state, read [CURRENT_STATE.md](CURRENT_STATE.md).
+The [analytics runbook](docs/phase-3-analytics.md) covers the native KPI
+check, the verified dbt staging model, and the pending Desktop import.
 
 ## Where to read next
 

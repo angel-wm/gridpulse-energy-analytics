@@ -1,0 +1,15 @@
+EVALUATE
+ROW (
+    "Rows", COUNTROWS ( 'erco_pilot' ),
+    "Distinct UTC hours", DISTINCTCOUNT ( 'erco_pilot'[hour_ending_utc] ),
+    "Paired hours", COUNTROWS (
+        FILTER (
+            'erco_pilot',
+            NOT ISBLANK ( 'erco_pilot'[demand_mw] )
+                && NOT ISBLANK ( 'erco_pilot'[forecast_mw] )
+        )
+    ),
+    "Peak MW", MAX ( 'erco_pilot'[demand_mw] ),
+    "MAE MW", ROUND ( AVERAGE ( 'erco_pilot'[absolute_forecast_error_mw] ), 3 ),
+    "Bias MW", ROUND ( AVERAGE ( 'erco_pilot'[forecast_error_mw] ), 3 )
+)

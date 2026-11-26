@@ -23,8 +23,9 @@ and can also run as `python scripts/check_local.py` before installing dbt.
 
 The GitHub Actions workflow runs that same static command on a standard
 runner for pull requests and pushes to `main`. It uses read-only repository
-permissions and does not authenticate to GCP, install dbt, or download
-source data. Standard runners on the current public repository are covered
+permissions. The Phase 3 workflow also parses the dbt project with a
+placeholder project ID. It uses no GCP credentials or EIA data downloads.
+Standard runners on the current public repository are covered
 by the [GitHub Actions free usage policy](https://docs.github.com/en/actions/concepts/billing-and-usage).
 Recheck runner eligibility if visibility or runner configuration changes.
 Use the local command if hosted execution cannot be kept free.

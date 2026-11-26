@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: eia930
+    schema: gridpulse_raw_pilot
+    tables:
+      - name: erco_202503
+        identifier: eia930_erco_202503
+        description: March 2025 ERCO balance records from the verified EIA-930 pilot.
+
+models:
+  - name: stg_eia930__erco_202503
+    description: Source-aligned hourly ERCO balance view for the March pilot.
+    columns:
+      - name: hour_ending_utc
+        description: UTC hour ending and unique key within the ERCO pilot.
+        data_tests:
+          - not_null
+          - unique
+      - name: balancing_authority
+        description: EIA balancing authority code for the pilot.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['ERCO']
