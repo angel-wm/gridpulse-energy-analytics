@@ -2,9 +2,9 @@ version: 2
 
 sources:
   - name: eia930
-    schema: gridpulse_raw_pilot
+    schema: "{{ 'gridpulse_recovery' if target.name == 'recovery' else 'gridpulse_raw_pilot' }}"
     config:
-      enabled: "{{ target.name == 'pilot' }}"
+      enabled: "{{ target.name in ['pilot', 'recovery'] }}"
     tables:
       - name: erco_202503
         identifier: eia930_erco_202503
@@ -19,10 +19,10 @@ models:
         data_tests:
           - not_null:
               config:
-                enabled: "{{ target.name == 'pilot' }}"
+                enabled: "{{ target.name in ['pilot', 'recovery'] }}"
           - unique:
               config:
-                enabled: "{{ target.name == 'pilot' }}"
+                enabled: "{{ target.name in ['pilot', 'recovery'] }}"
       - name: balancing_authority
         description: EIA balancing authority code for the pilot.
         data_tests:
@@ -30,4 +30,4 @@ models:
               arguments:
                 values: ['ERCO']
               config:
-                enabled: "{{ target.name == 'pilot' }}"
+                enabled: "{{ target.name in ['pilot', 'recovery'] }}"

@@ -2,26 +2,26 @@
 
 ## State
 
-Project state: **HISTORICAL MODELING COMPLETE**
+Project state: **WAREHOUSE QUALITY AND RECOVERY VALIDATED**
 
 Current phase: **None**
 
-Last closed phase: **Phase 4 — Analytical Modeling** (`closed`)
+Last closed phase: **Phase 5 — Data Quality, Documentation and Performance** (`closed`)
 
 Next planned phase:
-**Phase 5 — Data Quality, Documentation and Performance** (`planned`,
+**Phase 6 — Power BI Analytics** (`planned`,
 requires explicit authorization)
 
 Implementation status:
-**Historical ERCO raw table, staging view, and hourly fact verified in BigQuery Sandbox**
+**Historical ERCO warehouse, lineage, query scans, and bounded recovery verified**
 
 Published implementation:
-Local bootstrap, static checks, GitHub Actions workflow, pilot and historical
-ingestion, dbt models and tests, and historical reconciliation SQL.
+Local bootstrap, GitHub Actions checks, pilot and historical ingestion,
+dbt models and tests, query benchmarks, and the recovery runbook.
 
 Repository context status:
-The [Phase 4 handoff](docs/handoffs/phase-4-to-5.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 5.
+The [Phase 5 handoff](docs/handoffs/phase-5-to-6.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 6.
 
 ## What is confirmed
 
@@ -102,11 +102,20 @@ demand, forecast error, bias, clock changes, and missingness matched the
 baseline. The [modeling runbook](docs/phase-4-modeling.md) and
 [validation record](docs/validation/phase-4-modeling.md) document the results.
 
+## Phase 5 outcome
+
+Six history tests passed. The local dbt catalog confirmed the warehouse
+lineage. The historical raw table stores 2,287,296 logical bytes. The three
+equivalent full-range KPI queries each processed 420,096 bytes. The isolated
+recovery dataset restored the March pilot with 743 hours and the same KPIs.
+Billing remained unlinked. See the [quality runbook](docs/phase-5-quality.md)
+and [validation evidence](docs/validation/phase-5-quality.md).
+
 ## Current authorization
 
-The user explicitly authorized Phase 4 on 2026-11-26. The scope covers the
-2023–2025 ERCO raw load and historical analytical models in the unbilled
-Sandbox. Phase 5 requires explicit authorization.
+The user explicitly authorized Phase 5 on 2026-11-26. The scope covers
+historical quality checks, local dbt documentation, scan measurements, and
+the isolated March recovery rehearsal. Phase 6 requires explicit authorization.
 GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
 account for the Sandbox route.
 
@@ -124,4 +133,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 4 handoff to Phase 5](docs/handoffs/phase-4-to-5.md).
+Start with the [Phase 5 handoff to Phase 6](docs/handoffs/phase-5-to-6.md).

@@ -4,7 +4,7 @@ GridPulse is a planned **Analytics Engineering + Business Intelligence** portfol
 
 It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD; with an optional later Looker Studio experiment** where justified and feasible at **USD 0 actual charges**.
 
-> **Current status:** Phase 4 historical modeling complete. Phase 5 is planned.
+> **Current status:** Phase 5 quality and recovery validation complete. Phase 6 is planned.
 >
 > The design uses EIA-930 for ERCO (Texas), 2023–2025. The project requires **USD 0 actual charges**.
 
@@ -75,14 +75,14 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 
 | Item | State |
 | --- | --- |
-| Project | Historical modeling complete |
+| Project | Warehouse quality and recovery validated |
 | Current phase | None |
-| Last closed phase | Phase 4 — Analytical Modeling |
-| Next planned phase | Phase 5 — Data Quality, Documentation and Performance |
+| Last closed phase | Phase 5 — Data Quality, Documentation and Performance |
+| Next planned phase | Phase 6 — Power BI Analytics |
 | Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
 | Architecture | Design baseline with runtime verification gates |
 | BigQuery resources | Unbilled Sandbox with the March pilot and verified 26,304-row historical batch |
-| dbt project | Historical staging and hourly fact views verified with five data tests |
+| dbt project | Historical staging and hourly fact verified with six tests and documented lineage |
 | Terraform / CI/CD | Static GitHub Actions checks verified. Terraform and cloud CI deferred |
 | Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
 | Power BI | Desktop imported the March pilot CSV and reproduced the BigQuery KPIs |
@@ -97,6 +97,8 @@ and [phase rules](ROADMAP.md#phase-rules).
 For the authoritative state, read [CURRENT_STATE.md](CURRENT_STATE.md).
 The [historical modeling runbook](docs/phase-4-modeling.md) explains how
 to rebuild the full 2023–2025 raw table and dbt views.
+The [quality runbook](docs/phase-5-quality.md) covers warehouse checks,
+lineage, scan measurements, and the bounded recovery.
 The [analytics runbook](docs/phase-3-analytics.md) covers the native KPI
 check, the dbt staging model, and the Desktop import validation.
 

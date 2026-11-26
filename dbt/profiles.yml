@@ -16,4 +16,12 @@ gridpulse:
       schema: gridpulse_models
       location: US
       threads: 1
+      maximum_bytes_billed: "{{ 52428800 if env_var('GRIDPULSE_DBT_CATALOG', '0') == '1' else 10485760 }}"
+    recovery:
+      type: bigquery
+      method: oauth
+      database: "{{ env_var('GRIDPULSE_PROJECT_ID') }}"
+      schema: gridpulse_recovery
+      location: US
+      threads: 1
       maximum_bytes_billed: 10485760
