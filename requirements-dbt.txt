@@ -1,0 +1,5 @@
+# Phase 1 local bootstrap for Python 3.12.
+dbt==2.0.13
+mashumaro==3.23
+msgpack==1.2.4
+typing-extensions==4.16.0

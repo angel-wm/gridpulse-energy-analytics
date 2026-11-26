@@ -4,7 +4,7 @@ GridPulse is a planned **Analytics Engineering + Business Intelligence** portfol
 
 It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD; with an optional later Looker Studio experiment** where justified and feasible at **USD 0 actual charges**.
 
-> **Current status:** Phase 0 design complete. Phase 1 is planned.
+> **Current status:** Phase 1 — Repository and Cloud Foundation.
 >
 > The design uses EIA-930 for ERCO (Texas), 2023–2025. The project requires **USD 0 actual charges**.
 
@@ -75,10 +75,10 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 
 | Item | State |
 | --- | --- |
-| Project | Design complete |
-| Current phase | None |
+| Project | Foundation in progress |
+| Current phase | Phase 1 — Repository and Cloud Foundation |
 | Last closed phase | Phase 0 — Formal Project Design |
-| Next planned phase | Phase 1 — Repository and Cloud Foundation |
+| Next planned phase | Phase 2 — Source Acquisition, Ingestion and Raw Layer |
 | Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
 | Architecture | Design baseline with runtime verification gates |
 | BigQuery resources | Not implemented |
@@ -88,7 +88,8 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 | Power BI | Not implemented |
 | Looker Studio | Optional Phase 9, not begun; not required for core completion |
 
-The [Phase 0 handoff](docs/handoffs/phase-0-to-1.md) records the local
+The [Phase 1 foundation runbook](docs/phase-1-foundation.md) covers the local
+setup and the unbilled Sandbox gate. The [Phase 0 handoff](docs/handoffs/phase-0-to-1.md) records the local
 validation and the remaining runtime checks for BigQuery Sandbox, dbt,
 and Power BI. See the
 [strict zero-billing gate](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate)

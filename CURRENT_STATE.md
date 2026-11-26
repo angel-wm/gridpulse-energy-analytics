@@ -2,25 +2,25 @@
 
 ## State
 
-Project state: **DESIGN COMPLETE**
+Project state: **FOUNDATION IN PROGRESS**
 
-Current phase: **None**
+Current phase: **Phase 1 — Repository and Cloud Foundation** (`current`)
 
 Last closed phase: **Phase 0 — Formal Project Design** (`closed`)
 
 Next planned phase:
-**Phase 1 — Repository and Cloud Foundation** (requires explicit authorization)
+**Phase 2 — Source Acquisition, Ingestion and Raw Layer** (after Phase 1
+closure and explicit authorization)
 
 Implementation status:
-**Not started**
+**Local foundation in progress**
 
 Published implementation:
 **None**
 
 Repository context status:
-The closure baseline is the canonical `main` snapshot containing this
-state and the [Phase 0 handoff](docs/handoffs/phase-0-to-1.md). Verify the
-remote ref before treating a local copy as published.
+Phase 0 is closed on canonical `main`. Phase 1 started in this local
+checkout from the published [Phase 0 handoff](docs/handoffs/phase-0-to-1.md).
 
 ## What is confirmed
 
@@ -72,13 +72,24 @@ full three years. [The handoff](docs/handoffs/phase-0-to-1.md#handoff-to-phase-1
 assigns these gates to later phases. Terraform applies and cloud CI remain
 deferred until the relevant capabilities and authorization exist.
 
+## Phase 1 progress
+
+Use the [foundation runbook](docs/phase-1-foundation.md) and
+[validation record](docs/validation/phase-1-foundation.md) for the local
+setup, static checks, and project eligibility gate. The pinned dbt CLI
+and static checks were verified locally. Google Cloud created the dedicated
+GridPulse project on 2026-11-26. The console confirmed BigQuery Sandbox
+and no linked billing account. Scoped IAM, CLI authentication, and hosted
+CI are pending validation.
+
 ## Current authorization
 
-The user authorized completion and publication of the Phase 0 design.
-Phase 1 requires new explicit authorization. Cloud execution requires
-specific authorization under the phase and cost gates. The project must
-operate with USD 0 in actual charges and keep Cloud Billing unlinked for
-the Sandbox route.
+The user explicitly authorized starting Phase 1 and creating the dedicated
+Sandbox project without linking billing or activating a trial. Other
+cloud provisioning and workload execution require specific authorization
+under the phase and cost gates.
+GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
+account for the Sandbox route.
 
 ## Resume instructions
 
