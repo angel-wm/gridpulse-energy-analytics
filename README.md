@@ -75,15 +75,15 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 
 | Item | State |
 | --- | --- |
-| Project | Historical Power BI report validated |
+| Project | Historical Power BI and offline CI validated |
 | Current phase | None |
-| Last closed phase | Phase 6 — Power BI Analytics |
-| Next planned phase | Phase 7 — CI/CD and Infrastructure Hardening |
+| Last closed phase | Phase 7 — CI/CD and Infrastructure Hardening |
+| Next planned phase | Phase 8 — Final Validation and Portfolio Release |
 | Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
 | Architecture | Design baseline with runtime verification gates |
 | BigQuery resources | Unbilled Sandbox with the March pilot and verified 26,304-row historical batch |
 | dbt project | Historical staging and hourly fact verified with six tests and documented lineage |
-| Terraform / CI/CD | Static GitHub Actions checks verified. Terraform and cloud CI deferred |
+| Terraform / CI/CD | Shared offline check verified from a clean clone. Terraform and cloud CI deferred |
 | Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
 | Power BI | Two local report designs use the verified 2023–2025 historical CSV |
 | Looker Studio | Optional Phase 9, not begun; not required for core completion |

@@ -2,18 +2,18 @@
 
 ## State
 
-Project state: **POWER BI REPORT VALIDATED**
+Project state: **POWER BI AND OFFLINE CI VALIDATED**
 
 Current phase: **None**
 
-Last closed phase: **Phase 6 — Power BI Analytics** (`closed`)
+Last closed phase: **Phase 7 — CI/CD and Infrastructure Hardening** (`closed`)
 
 Next planned phase:
-**Phase 7 — CI/CD and Infrastructure Hardening** (`planned`,
-authorized to start after Phase 6 closure)
+**Phase 8 — Final Validation and Portfolio Release** (`planned`,
+authorized to start after Phase 7 closure)
 
 Implementation status:
-**Historical ERCO CSV and both Power BI Desktop designs validated**
+**Historical reports verified in Desktop and the CI command verified locally**
 
 Published implementation:
 Local bootstrap, GitHub Actions checks, pilot and historical ingestion,
@@ -21,8 +21,8 @@ dbt models and tests, query benchmarks, the recovery runbook, and the
 historical Power BI projects.
 
 Repository context status:
-The [Phase 6 handoff](docs/handoffs/phase-6-to-7.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 7.
+The [Phase 7 handoff](docs/handoffs/phase-7-to-8.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 8.
 
 ## What is confirmed
 
@@ -125,6 +125,13 @@ color variant's two pages rendered successfully after layout cleanup.
 The original reopened from its PBIP, refreshed the local CSV, and rendered
 both pages with the same metric results.
 
+## Phase 7 outcome
+
+The shared offline CI command passed from a clean clone with the candidate
+changes. A broken local link caused a nonzero exit before dbt. The live
+access audit confirmed the dedicated operator's scope and absence of
+user-managed keys. See the [validation record](docs/validation/phase-7-ci-hardening.md).
+
 ## Current authorization
 
 The user explicitly authorized Phase 6 on 2026-11-26. The scope covers the
@@ -148,4 +155,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 6 handoff to Phase 7](docs/handoffs/phase-6-to-7.md).
+Start with the [Phase 7 handoff to Phase 8](docs/handoffs/phase-7-to-8.md).
