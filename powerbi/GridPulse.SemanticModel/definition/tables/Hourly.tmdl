@@ -1,0 +1,163 @@
+/// One row per distinct ERCO UTC hour ending for 2023–2025.
+table Hourly
+	lineageTag: fc596b3b-1c79-4001-b00f-dc0b0fef9700
+
+	/// Maximum observed hourly demand in the selected context.
+	measure 'Peak Demand MW' = MAX('Hourly'[demand_mw])
+		formatString: #,##0 "MW"
+		lineageTag: 9b73a9b0-b38c-410d-82e4-e3b0d77571eb
+
+	/// First reporting date tied for the observed peak in context.
+	measure 'Peak Reporting Date' =
+			VAR Peak = [Peak Demand MW]
+			RETURN IF(NOT ISBLANK(Peak), CALCULATE(MIN('Hourly'[reporting_date]), KEEPFILTERS('Hourly'[demand_mw] = Peak)))
+		formatString: mmm d, yyyy
+		lineageTag: 224fa06d-c142-4c2a-838c-b8ab92f67fef
+
+	/// Mean observed demand over hours with both observations.
+	measure 'Mean Paired Demand MW' = CALCULATE(AVERAGE('Hourly'[demand_mw]), KEEPFILTERS('Hourly'[paired_hour] = 1))
+		formatString: #,##0 "MW"
+		lineageTag: 241823c0-18c3-4de7-940e-7cccded3e6ad
+
+	/// Mean day-ahead forecast over the same paired hours.
+	measure 'Mean Paired Forecast MW' = CALCULATE(AVERAGE('Hourly'[forecast_mw]), KEEPFILTERS('Hourly'[paired_hour] = 1))
+		formatString: #,##0 "MW"
+		lineageTag: b4d3372d-e767-46c0-955f-ec712a4e987c
+
+	/// Mean observed demand for hours with a reported demand value.
+	measure 'Mean Observed Demand MW' = AVERAGE('Hourly'[demand_mw])
+		formatString: #,##0 "MW"
+		lineageTag: fca30f74-a301-4572-9e17-fbbd450ca646
+
+	/// Count of hourly observations in the selected context.
+	measure 'Reporting Hours' = COUNTROWS('Hourly')
+		formatString: #,##0
+		lineageTag: c7a3929d-1b2a-4ff1-a0fe-1c9dcfeef4e0
+
+	/// Count of hours with both demand and forecast.
+	measure 'Paired Hours' = COALESCE(SUM('Hourly'[paired_hour]), 0)
+		formatString: #,##0
+		lineageTag: fcae848c-5cd8-44b3-9a4b-75aa2f263bb9
+
+	/// Paired hours divided by reporting hours in context.
+	measure 'Paired Coverage' = DIVIDE([Paired Hours], [Reporting Hours])
+		formatString: 0.00%
+		lineageTag: 29123e27-116b-42bf-9a23-a2cd3a5d328b
+
+	/// Mean magnitude of the day-ahead forecast error over paired hours.
+	measure 'Forecast MAE MW' = DIVIDE(SUM('Hourly'[absolute_error_mw]), [Paired Hours])
+		formatString: #,##0.0 "MW"
+		lineageTag: 8e37df71-2d9c-4eaa-a22b-50b150ca8247
+
+	/// Mean signed forecast minus demand. Positive indicates overforecasting.
+	measure 'Forecast Bias MW' = DIVIDE(SUM('Hourly'[forecast_error_mw]), [Paired Hours])
+		formatString: +#,##0.0 "MW";-#,##0.0 "MW";0.0 "MW"
+		lineageTag: 9226454b-4853-4aa2-b030-0e85c5f95366
+
+	column balancing_authority
+		dataType: string
+		lineageTag: c56d94f7-013e-410d-beca-8493aa2ac9b3
+		summarizeBy: none
+		sourceColumn: balancing_authority
+
+	column reporting_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: ab97238e-83ad-4308-8d46-d32574119f1b
+		summarizeBy: none
+		sourceColumn: reporting_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column reporting_hour_number
+		dataType: int64
+		lineageTag: 7a54afe0-85d9-4d46-ae99-70b5f79636ad
+		summarizeBy: sum
+		sourceColumn: reporting_hour_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column hour_ending_utc
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		lineageTag: ff25e074-5303-431a-b682-f614b6f4d515
+		summarizeBy: none
+		sourceColumn: hour_ending_utc
+
+		variation Variation
+			isDefault
+			relationship: bf342365-1689-4679-b584-f04bd78f4938
+			defaultHierarchy: LocalDateTable_b9197a20-2703-406f-8477-6b53f9e547af.'Date Hierarchy'
+
+	column demand_mw
+		dataType: int64
+		lineageTag: c2494167-3fd2-4cdb-8693-f838ab28855b
+		summarizeBy: sum
+		sourceColumn: demand_mw
+
+		annotation SummarizationSetBy = Automatic
+
+	column forecast_mw
+		dataType: int64
+		lineageTag: f8b71dd5-3557-43a0-b0ea-963b59f19577
+		summarizeBy: sum
+		sourceColumn: forecast_mw
+
+		annotation SummarizationSetBy = Automatic
+
+	column net_generation_mw
+		dataType: int64
+		lineageTag: ef5f301e-8a3c-4b47-9937-3442e4229f40
+		summarizeBy: sum
+		sourceColumn: net_generation_mw
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_file
+		dataType: string
+		lineageTag: f35ddf35-9aaa-47e3-893d-f40ddd6da44c
+		summarizeBy: none
+		sourceColumn: source_file
+
+	column local_start_hour
+		dataType: int64
+		lineageTag: 457a1bc2-0658-48f3-8526-ee730788c5b4
+		summarizeBy: sum
+		sourceColumn: local_start_hour
+
+		annotation SummarizationSetBy = Automatic
+
+	column paired_hour
+		dataType: int64
+		lineageTag: 1fe295df-38e7-4c85-b749-02c94f0adbbd
+		summarizeBy: sum
+		sourceColumn: paired_hour
+
+		annotation SummarizationSetBy = Automatic
+
+	column forecast_error_mw
+		dataType: int64
+		lineageTag: 19996160-b286-410a-b041-d429a19f7dda
+		summarizeBy: sum
+		sourceColumn: forecast_error_mw
+
+		annotation SummarizationSetBy = Automatic
+
+	column absolute_error_mw
+		dataType: int64
+		lineageTag: b1f34212-80db-497e-bd41-f9a61d2931c0
+		summarizeBy: sum
+		sourceColumn: absolute_error_mw
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Hourly = m
+		mode: import
+		source =
+				let
+				    Csv = Csv.Document(File.Contents(CsvPath), [Delimiter=",", Columns=12, Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Csv, [PromoteAllScalars=true]),
+				    Types = Table.TransformColumnTypes(Headers, {{"balancing_authority", type text}, {"reporting_date", type date}, {"reporting_hour_number", Int64.Type}, {"demand_mw", Int64.Type}, {"forecast_mw", Int64.Type}, {"net_generation_mw", Int64.Type}, {"source_file", type text}, {"local_start_hour", Int64.Type}, {"paired_hour", Int64.Type}, {"forecast_error_mw", Int64.Type}, {"absolute_error_mw", Int64.Type}}, "en-US"),
+				    Utc = Table.TransformColumns(Types, {{"hour_ending_utc", each DateTimeZone.RemoveZone(DateTimeZone.FromText(_)), type datetime}})
+				in
+				    Utc

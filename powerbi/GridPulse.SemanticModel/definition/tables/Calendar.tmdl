@@ -1,0 +1,40 @@
+/// Calendar of EIA reporting dates across the full project scope.
+table Calendar
+	lineageTag: 3ff22b8c-3c95-4b73-af68-cbc63c72720c
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 6d8fe095-6f3c-4c08-a014-0faad3f86715
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column YearMonth
+		dataType: string
+		lineageTag: a06dfae3-dcb7-4794-a176-3e1a58873b80
+		summarizeBy: none
+		sourceColumn: YearMonth
+		sortByColumn: YearMonthKey
+
+	column YearMonthKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 83c506c4-48b0-4b94-9455-39390df0777f
+		summarizeBy: none
+		sourceColumn: YearMonthKey
+
+	partition Calendar = m
+		mode: import
+		source =
+				let
+				    Days = List.Dates(#date(2023, 1, 1), 1096, #duration(1, 0, 0, 0)),
+				    Dates = Table.TransformColumnTypes(Table.FromList(Days, Splitter.SplitByNothing(), {"Date"}), {{"Date", type date}}),
+				    WithMonth = Table.AddColumn(Dates, "YearMonth", each Date.ToText([Date], [Format="yyyy-MM", Culture="en-US"]), type text),
+				    WithKey = Table.AddColumn(WithMonth, "YearMonthKey", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type)
+				in
+				    WithKey

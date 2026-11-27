@@ -2,26 +2,27 @@
 
 ## State
 
-Project state: **WAREHOUSE QUALITY AND RECOVERY VALIDATED**
+Project state: **POWER BI REPORT VALIDATED**
 
 Current phase: **None**
 
-Last closed phase: **Phase 5 — Data Quality, Documentation and Performance** (`closed`)
+Last closed phase: **Phase 6 — Power BI Analytics** (`closed`)
 
 Next planned phase:
-**Phase 6 — Power BI Analytics** (`planned`,
-requires explicit authorization)
+**Phase 7 — CI/CD and Infrastructure Hardening** (`planned`,
+authorized to start after Phase 6 closure)
 
 Implementation status:
-**Historical ERCO warehouse, lineage, query scans, and bounded recovery verified**
+**Historical ERCO CSV and both Power BI Desktop designs validated**
 
 Published implementation:
 Local bootstrap, GitHub Actions checks, pilot and historical ingestion,
-dbt models and tests, query benchmarks, and the recovery runbook.
+dbt models and tests, query benchmarks, the recovery runbook, and the
+historical Power BI projects.
 
 Repository context status:
-The [Phase 5 handoff](docs/handoffs/phase-5-to-6.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 6.
+The [Phase 6 handoff](docs/handoffs/phase-6-to-7.md) identifies the closure
+snapshot on canonical `main` and the evidence needed for Phase 7.
 
 ## What is confirmed
 
@@ -111,11 +112,25 @@ recovery dataset restored the March pilot with 743 hours and the same KPIs.
 Billing remained unlinked. See the [quality runbook](docs/phase-5-quality.md)
 and [validation evidence](docs/validation/phase-5-quality.md).
 
+## Phase 6 outcome
+
+The curated CSV matched the 26,304 historical UTC hours, 26,232 paired
+hours, peak demand, MAE, and bias. See the
+[export validation](docs/validation/phase-6-power-bi.md). The
+[approved report specification](_brief/report-spec.md) is implemented in
+the local [Power BI project](powerbi/GridPulse.pbip). A separate
+[color variant](powerbi/GridPulse%20Color.pbip) shares its semantic model.
+Both Desktop models returned all four expected DAX scenarios. The
+color variant's two pages rendered successfully after layout cleanup.
+The original reopened from its PBIP, refreshed the local CSV, and rendered
+both pages with the same metric results.
+
 ## Current authorization
 
-The user explicitly authorized Phase 5 on 2026-11-26. The scope covers
-historical quality checks, local dbt documentation, scan measurements, and
-the isolated March recovery rehearsal. Phase 6 requires explicit authorization.
+The user explicitly authorized Phase 6 on 2026-11-26. The scope covers the
+historical CSV and the local Power BI report. The owner approved the
+two-page specification. The owner authorized Phases 7 and 8 in sequence,
+with GitHub visibility private until separately authorized.
 GridPulse requires USD 0 actual charges and an unlinked Cloud Billing
 account for the Sandbox route.
 
@@ -133,4 +148,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 5 handoff to Phase 6](docs/handoffs/phase-5-to-6.md).
+Start with the [Phase 6 handoff to Phase 7](docs/handoffs/phase-6-to-7.md).

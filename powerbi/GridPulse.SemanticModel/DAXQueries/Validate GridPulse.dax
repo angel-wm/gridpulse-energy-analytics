@@ -1,0 +1,58 @@
+EVALUATE
+UNION (
+    CALCULATETABLE (
+        ROW (
+            "Selection", "Full history",
+            "Reporting hours", [Reporting Hours],
+            "UTC keys", DISTINCTCOUNT('Hourly'[hour_ending_utc]),
+            "Paired hours", [Paired Hours],
+            "Coverage", [Paired Coverage],
+            "Peak MW", [Peak Demand MW],
+            "Peak reporting date", FORMAT([Peak Reporting Date], "yyyy-MM-dd"),
+            "MAE MW", IF(ISBLANK([Forecast MAE MW]), BLANK(), ROUND([Forecast MAE MW], 6)),
+            "Bias MW", IF(ISBLANK([Forecast Bias MW]), BLANK(), ROUND([Forecast Bias MW], 6))
+        )
+    ),
+    CALCULATETABLE (
+        ROW (
+            "Selection", "March 2025",
+            "Reporting hours", [Reporting Hours],
+            "UTC keys", DISTINCTCOUNT('Hourly'[hour_ending_utc]),
+            "Paired hours", [Paired Hours],
+            "Coverage", [Paired Coverage],
+            "Peak MW", [Peak Demand MW],
+            "Peak reporting date", FORMAT([Peak Reporting Date], "yyyy-MM-dd"),
+            "MAE MW", IF(ISBLANK([Forecast MAE MW]), BLANK(), ROUND([Forecast MAE MW], 6)),
+            "Bias MW", IF(ISBLANK([Forecast Bias MW]), BLANK(), ROUND([Forecast Bias MW], 6))
+        ),
+        DATESBETWEEN('Calendar'[Date], DATE(2025, 3, 1), DATE(2025, 3, 31))
+    ),
+    CALCULATETABLE (
+        ROW (
+            "Selection", "Local start hour 17",
+            "Reporting hours", [Reporting Hours],
+            "UTC keys", DISTINCTCOUNT('Hourly'[hour_ending_utc]),
+            "Paired hours", [Paired Hours],
+            "Coverage", [Paired Coverage],
+            "Peak MW", [Peak Demand MW],
+            "Peak reporting date", FORMAT([Peak Reporting Date], "yyyy-MM-dd"),
+            "MAE MW", IF(ISBLANK([Forecast MAE MW]), BLANK(), ROUND([Forecast MAE MW], 6)),
+            "Bias MW", IF(ISBLANK([Forecast Bias MW]), BLANK(), ROUND([Forecast Bias MW], 6))
+        ),
+        TREATAS({17}, 'Hourly'[local_start_hour])
+    ),
+    CALCULATETABLE (
+        ROW (
+            "Selection", "Unpaired hours",
+            "Reporting hours", [Reporting Hours],
+            "UTC keys", DISTINCTCOUNT('Hourly'[hour_ending_utc]),
+            "Paired hours", [Paired Hours],
+            "Coverage", [Paired Coverage],
+            "Peak MW", [Peak Demand MW],
+            "Peak reporting date", FORMAT([Peak Reporting Date], "yyyy-MM-dd"),
+            "MAE MW", IF(ISBLANK([Forecast MAE MW]), BLANK(), ROUND([Forecast MAE MW], 6)),
+            "Bias MW", IF(ISBLANK([Forecast Bias MW]), BLANK(), ROUND([Forecast Bias MW], 6))
+        ),
+        TREATAS({0}, 'Hourly'[paired_hour])
+    )
+)

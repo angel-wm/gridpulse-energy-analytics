@@ -1,0 +1,18 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Hourly","Calendar","CsvPath"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Hourly
+ref table Calendar
+ref table DateTableTemplate_ba2ef80c-0a60-4088-bd0b-79d141720bd5
+ref table LocalDateTable_b9197a20-2703-406f-8477-6b53f9e547af

@@ -1,0 +1,8 @@
+relationship 95cbc329-e911-43e4-916a-736348d194d6
+	fromColumn: Hourly.reporting_date
+	toColumn: Calendar.Date
+
+relationship bf342365-1689-4679-b584-f04bd78f4938
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Hourly.hour_ending_utc
+	toColumn: LocalDateTable_b9197a20-2703-406f-8477-6b53f9e547af.Date

@@ -1,0 +1,5 @@
+/// Local path to the verified ERCO hourly CSV.
+expression CsvPath = "C:\Users\Public\Documents\GridPulse\erco_hourly_2023_2025.csv" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 05138e6d-13b6-433c-a805-7b08e61e8a8a
+
+	annotation PBI_ResultType = Text

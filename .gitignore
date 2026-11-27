@@ -32,6 +32,7 @@ data/tmp/
 
 # Power BI generated/local artifacts
 *.pbix
+powerbi/**/.pbi/
 
 # OS / editors
 .DS_Store

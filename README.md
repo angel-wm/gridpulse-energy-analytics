@@ -75,17 +75,17 @@ Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not par
 
 | Item | State |
 | --- | --- |
-| Project | Warehouse quality and recovery validated |
+| Project | Historical Power BI report validated |
 | Current phase | None |
-| Last closed phase | Phase 5 — Data Quality, Documentation and Performance |
-| Next planned phase | Phase 6 — Power BI Analytics |
+| Last closed phase | Phase 6 — Power BI Analytics |
+| Next planned phase | Phase 7 — CI/CD and Infrastructure Hardening |
 | Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
 | Architecture | Design baseline with runtime verification gates |
 | BigQuery resources | Unbilled Sandbox with the March pilot and verified 26,304-row historical batch |
 | dbt project | Historical staging and hourly fact verified with six tests and documented lineage |
 | Terraform / CI/CD | Static GitHub Actions checks verified. Terraform and cloud CI deferred |
 | Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
-| Power BI | Desktop imported the March pilot CSV and reproduced the BigQuery KPIs |
+| Power BI | Two local report designs use the verified 2023–2025 historical CSV |
 | Looker Studio | Optional Phase 9, not begun; not required for core completion |
 
 The [Phase 2 ingestion runbook](docs/phase-2-ingestion.md) explains how to
@@ -98,7 +98,9 @@ For the authoritative state, read [CURRENT_STATE.md](CURRENT_STATE.md).
 The [historical modeling runbook](docs/phase-4-modeling.md) explains how
 to rebuild the full 2023–2025 raw table and dbt views.
 The [quality runbook](docs/phase-5-quality.md) covers warehouse checks,
-lineage, scan measurements, and the bounded recovery.
+lineage, scan measurements, and the bounded recovery. The
+[Power BI validation](docs/validation/phase-6-power-bi.md) links both
+editable reports and explains the historical export and refresh.
 The [analytics runbook](docs/phase-3-analytics.md) covers the native KPI
 check, the dbt staging model, and the Desktop import validation.
 
