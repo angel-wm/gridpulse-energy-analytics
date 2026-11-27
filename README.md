@@ -10,9 +10,9 @@ the historical data, then delivers interactive reports in Power BI Desktop.
 The two pages answer when demand peaks and where day-ahead forecast errors
 are largest. Both can be filtered by EIA reporting date and local hour.
 
-![GridPulse Color demand patterns page](docs/assets/gridpulse-demand.png)
+![GridPulse Color demand patterns page](docs/assets/gridpulse-demand-canvas.png)
 
-![GridPulse Color day-ahead forecast accuracy page](docs/assets/gridpulse-forecast.png)
+![GridPulse Color day-ahead forecast accuracy page](docs/assets/gridpulse-forecast-canvas.png)
 
 **Open an editable report in Power BI Desktop.**
 [GridPulse Color](powerbi/GridPulse%20Color.pbip) and the
