@@ -1,108 +1,57 @@
-# GridPulse — Cloud Energy Analytics Platform
+# GridPulse — Electricity demand and forecast accuracy
 
-GridPulse is a planned **Analytics Engineering + Business Intelligence** portfolio project for energy data.
+GridPulse is an analytics engineering portfolio project using hourly
+electricity data from **EIA-930** for the ERCO balancing authority in Texas
+from 2023 to 2025. It uses BigQuery Sandbox and dbt Core to validate and model
+the historical data, then delivers interactive reports in Power BI Desktop.
 
-It is designed to turn source energy data into tested, documented, business-ready analytical models using **BigQuery, dbt, SQL, Power BI, Terraform, and CI/CD; with an optional later Looker Studio experiment** where justified and feasible at **USD 0 actual charges**.
+## Dashboard
 
-> **Current status:** Phase 5 quality and recovery validation complete. Phase 6 is planned.
->
-> The design uses EIA-930 for ERCO (Texas), 2023–2025. The project requires **USD 0 actual charges**.
+The two pages answer when demand peaks and where day-ahead forecast errors
+are largest. Both can be filtered by EIA reporting date and local hour.
 
-For authoritative project context and task-specific reading guidance, start with [REPO_CONTEXT.md](REPO_CONTEXT.md).
+![GridPulse Color demand patterns page](docs/assets/gridpulse-demand.png)
 
-## Why this project exists
+![GridPulse Color day-ahead forecast accuracy page](docs/assets/gridpulse-forecast.png)
 
-GridPulse is the portfolio project focused on learning how a modern cloud analytics platform is designed and operated.
+**Open an editable report in Power BI Desktop.**
+[GridPulse Color](powerbi/GridPulse%20Color.pbip) and the
+[original light design](powerbi/GridPulse.pbip) share the same model.
+To refresh either report, follow the
+[rebuild and refresh guide](docs/phase-8-release.md#reproduce-the-report).
 
-The project should demonstrate that the user can:
+## Findings
 
-- work directly with BigQuery rather than treating it as an invisible dbt backend;
-- build maintainable analytical models with dbt;
-- define and validate business metrics;
-- manage cost and data quality deliberately;
-- expose curated models through Power BI;
-- automate infrastructure and validation only where they add real value.
+| Measure | Verified result |
+| --- | ---: |
+| Hourly records | 26,304 |
+| Hours with both demand and forecast | 26,232 (99.73%) |
+| Observed peak demand | 85,544 MW on August 20, 2024 |
+| Mean absolute day-ahead forecast error | 1,268.0 MW |
+| Mean forecast minus demand | +374.6 MW |
 
-The final repository should be understandable by another engineer and defensible in a technical interview.
+The positive mean error indicates average overforecasting during paired
+hours. Averages can hide variation by period and hour. The dashboard
+shows how absolute error varies across months and local hours.
+The results describe this historical ERCO snapshot.
 
-## Intended data flow
+## Data flow and checks
 
-The current conceptual direction is:
+    Six EIA-930 Balance files → verified ERCO CSV → BigQuery raw table
+        → dbt staging and hourly fact views → bounded CSV export
+        → shared Import model and two Power BI reports
 
-    Energy source data
-            ↓
-    acquisition / ingestion
-            ↓
-       BigQuery raw
-            ↓
-       dbt staging
-            ↓
-    dbt intermediate
-            ↓
-        dbt marts
-            ↓
-         Power BI
-            ↓
-     Core release (Phase 8)
+Python verifies the source hashes and prepares the warehouse input. dbt
+checks UTC uniqueness, source coverage, reporting hours, and consistency
+from raw to fact. Power BI uses a calendar and DAX measures to summarize
+coverage, observed peak, and forecast error.
 
-    Optional post-release (Phase 9):
-    curated mart -> free CSV -> Looker Studio
-
-Supporting concerns such as Terraform, GitHub Actions, security, cost control, and data quality apply across the flow.
-
-See the [Phase 0 design baseline](docs/phase-0-design-baseline.md) for
-the initial model and release scope.
-
-## Planned technology roles
-
-| Technology | Intended role |
-| --- | --- |
-| BigQuery | Primary cloud analytical warehouse |
-| SQL / GoogleSQL | Core transformation and analytical language |
-| dbt | Modular transformations, tests, documentation, lineage, and marts; select a compatible free local distribution before implementation |
-| Python | Ingestion or utilities when SQL/dbt are not the natural tool |
-| Power BI / DAX | Primary business-facing semantic and reporting layer; prefer Desktop/Import and assess PBIP versioning |
-| Looker Studio (Data Studio) | **Optional Phase 9 after core release**, small dashboard via free bounded CSV export; requires separate authorization |
-| Terraform | Reproducible cloud infrastructure where justified |
-| GitHub Actions | Safe CI/CD and automated validation where justified |
-| Git / GitHub | Version control, review, publication, and project handoff |
-
-Docker is optional and has not been selected; see the [reproducibility tradeoff](PROJECT_SPEC.md#explicit-non-goals).
-
-Spark, Databricks, Snowflake, Kafka, Airflow, Hadoop, and Kubernetes are not part of the planned core architecture unless a future approved decision establishes a real need.
-
-## Current state
-
-| Item | State |
-| --- | --- |
-| Project | Historical Power BI and offline CI validated |
-| Current phase | None |
-| Last closed phase | Phase 7 — CI/CD and Infrastructure Hardening |
-| Next planned phase | Phase 8 — Final Validation and Portfolio Release |
-| Data source | [EIA-930](PROJECT_SPEC.md#business-domain), ERCO (Texas), 2023–2025 |
-| Architecture | Design baseline with runtime verification gates |
-| BigQuery resources | Unbilled Sandbox with the March pilot and verified 26,304-row historical batch |
-| dbt project | Historical staging and hourly fact verified with six tests and documented lineage |
-| Terraform / CI/CD | Shared offline check verified from a clean clone. Terraform and cloud CI deferred |
-| Billing / charges | Zero billing authorized; USD 0 actual-charge requirement |
-| Power BI | Two local report designs use the verified 2023–2025 historical CSV |
-| Looker Studio | Optional Phase 9, not begun; not required for core completion |
-
-The [Phase 2 ingestion runbook](docs/phase-2-ingestion.md) explains how to
-rebuild the pilot. The [Phase 2 handoff](docs/handoffs/phase-2-to-3.md)
-links the results and describes the next analytics checks. See the
-[strict zero-billing gate](PROJECT_SPEC.md#cost-constraint--strict-zero-billing-gate)
-and [phase rules](ROADMAP.md#phase-rules).
-
-For the authoritative state, read [CURRENT_STATE.md](CURRENT_STATE.md).
-The [historical modeling runbook](docs/phase-4-modeling.md) explains how
-to rebuild the full 2023–2025 raw table and dbt views.
-The [quality runbook](docs/phase-5-quality.md) covers warehouse checks,
-lineage, scan measurements, and the bounded recovery. The
-[Power BI validation](docs/validation/phase-6-power-bi.md) links both
-editable reports and explains the historical export and refresh.
-The [analytics runbook](docs/phase-3-analytics.md) covers the native KPI
-check, the dbt staging model, and the Desktop import validation.
+The BigQuery project used Sandbox with billing unlinked. The reports
+were refreshed in Power BI Desktop. GitHub Actions uses the same
+[offline check command](scripts/check_ci.py) that was tested from a clean
+clone. Terraform and cloud-connected CI are deferred for the single
+Sandbox. See the [validation record](docs/validation/phase-8-release.md)
+for measured evidence and limitations.
 
 ## Where to read next
 
@@ -146,4 +95,5 @@ That guidance affects presentation only. GridPulse's own project semantics, auth
 ## License
 
 GridPulse's original code and documentation are available under the [MIT License](LICENSE).
-Third-party datasets and materials remain subject to their own licenses and terms.
+Source data and third-party materials retain their own terms. See the
+[source attribution and reuse notes](docs/phase-8-release.md#data-attribution).

@@ -2,27 +2,26 @@
 
 ## State
 
-Project state: **POWER BI AND OFFLINE CI VALIDATED**
+Project state: **CORE RELEASE VERIFIED AND DELIVERED PRIVATELY**
 
 Current phase: **None**
 
-Last closed phase: **Phase 7 — CI/CD and Infrastructure Hardening** (`closed`)
+Last closed phase: **Phase 8 — Final Validation and Portfolio Release** (`closed`)
 
 Next planned phase:
-**Phase 8 — Final Validation and Portfolio Release** (`planned`,
-authorized to start after Phase 7 closure)
+**None for the core project. Phase 9 is optional and requires separate authorization.**
 
 Implementation status:
-**Historical reports verified in Desktop and the CI command verified locally**
+**The 2023–2025 historical delivery was reproduced through Power BI Desktop**
 
 Published implementation:
 Local bootstrap, GitHub Actions checks, pilot and historical ingestion,
 dbt models and tests, query benchmarks, the recovery runbook, and the
-historical Power BI projects.
+historical Power BI projects, release guide, and portfolio screenshots.
 
 Repository context status:
-The [Phase 7 handoff](docs/handoffs/phase-7-to-8.md) identifies the closure
-snapshot on canonical `main` and the evidence needed for Phase 8.
+The [core release handoff](docs/handoffs/phase-8-release.md) identifies the
+closure package on canonical `main`. The owner controls public visibility.
 
 ## What is confirmed
 
@@ -132,6 +131,13 @@ changes. A broken local link caused a nonzero exit before dbt. The live
 access audit confirmed the dedicated operator's scope and absence of
 user-managed keys. See the [validation record](docs/validation/phase-7-ci-hardening.md).
 
+## Phase 8 outcome
+
+The six verified EIA files reproduced the historical source projection.
+The rebuilt dbt views passed six tests and produced a byte-identical curated
+CSV. A clean Power BI copy refreshed from that export and returned the four
+expected DAX rows. See the [release validation](docs/validation/phase-8-release.md).
+
 ## Current authorization
 
 The user explicitly authorized Phase 6 on 2026-11-26. The scope covers the
@@ -155,4 +161,4 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 7 handoff to Phase 8](docs/handoffs/phase-7-to-8.md).
+Start with the [Phase 8 core release handoff](docs/handoffs/phase-8-release.md).
