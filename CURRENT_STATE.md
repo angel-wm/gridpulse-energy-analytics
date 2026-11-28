@@ -2,17 +2,18 @@
 
 ## State
 
-Project state: **CORE RELEASE VERIFIED AND DELIVERED PRIVATELY**
+Project state: **CORE RELEASE AND OPTIONAL LOOKER STUDIO EXPERIMENT COMPLETE**
 
 Current phase: **None**
 
-Last closed phase: **Phase 8 — Final Validation and Portfolio Release** (`closed`)
+Last closed phase: **Phase 9 — Post-release Looker Studio Experiment** (`closed`)
 
 Next planned phase:
-**None for the core project. Phase 9 is optional and requires separate authorization.**
+**None**
 
 Implementation status:
-**The 2023–2025 historical delivery was reproduced through Power BI Desktop**
+**The 2023–2025 historical delivery was reproduced through Power BI Desktop.
+The optional Looker Studio report was validated against the same historical export.**
 
 Published implementation:
 Local bootstrap, GitHub Actions checks, pilot and historical ingestion,
@@ -21,7 +22,9 @@ historical Power BI projects, release guide, and portfolio screenshots.
 
 Repository context status:
 The [core release handoff](docs/handoffs/phase-8-release.md) identifies the
-closure package on canonical `main`. The owner controls public visibility.
+core package on canonical `main`. The
+[Looker Studio handoff](docs/handoffs/phase-9-looker-studio.md) covers the
+separate experiment and its refresh procedure.
 
 ## What is confirmed
 
@@ -138,7 +141,17 @@ The rebuilt dbt views passed six tests and produced a byte-identical curated
 CSV. A clean Power BI copy refreshed from that export and returned the four
 expected DAX rows. See the [release validation](docs/validation/phase-8-release.md).
 
+## Phase 9 outcome
+
+The user explicitly authorized optional Phase 9 on 2026-11-27 after Phase 8
+closed. The scope is the free CSV-based Looker Studio experiment under D-020.
+The report matched the four Power BI scenarios. An isolated CSV test confirmed
+that append preserves duplicates, and a separate clean dataset verified the
+replacement procedure. See the [validation record](docs/validation/phase-9-looker-studio.md).
+
 ## Current authorization
+
+There is no active phase. The strict USD 0 cost gate applies to any future work.
 
 The user explicitly authorized Phase 6 on 2026-11-26. The scope covers the
 historical CSV and the local Power BI report. The owner approved the
@@ -161,4 +174,6 @@ When resuming GridPulse:
 
 ## Next handoff
 
-Start with the [Phase 8 core release handoff](docs/handoffs/phase-8-release.md).
+Use the [Phase 9 Looker Studio handoff](docs/handoffs/phase-9-looker-studio.md)
+for the optional experiment and the [Phase 8 core release handoff](docs/handoffs/phase-8-release.md)
+for the Power BI release.

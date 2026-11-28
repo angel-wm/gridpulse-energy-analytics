@@ -62,8 +62,9 @@ Phase 8 must not automatically initiate Phase 9 or any billing-enabled work.
 
 ## Optional Phase 9 — Post-release Looker Studio Experiment
 
-This experiment is **planned only** and requires a new explicit user
-authorization after Phase 8 closes. Use a small reproducible export of
+This experiment requires explicit user authorization after Phase 8 closes.
+See [Current State](CURRENT_STATE.md#phase-9-outcome) for the recorded
+authorization. Use a small reproducible export of
 curated BigQuery/dbt mart results with Looker Studio's free CSV upload, verify
 shared KPI definitions, freshness and safe replacement/append handling.
 No billing account is needed for the default CSV-based experiment.
